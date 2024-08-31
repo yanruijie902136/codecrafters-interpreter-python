@@ -2,7 +2,7 @@
 
 from collections import namedtuple
 
-from app.Token import Token, TokenLiteral, TokenType
+from app.Token import KEYWORDS, Token, TokenLiteral, TokenType
 
 
 LexicalError = namedtuple("LexicalError", ("line", "message"))
@@ -81,7 +81,8 @@ class Scanner:
     def __identifier(self):
         while self.__isAlphaNumeric(self.__peek()):
             self.__advance()
-        self.__addToken(TokenType.IDENTIFIER)
+        lexeme = self.__source[self.__start:self.__current]
+        self.__addToken(TokenType[lexeme.upper()] if lexeme in KEYWORDS else TokenType.IDENTIFIER)
 
     def __number(self):
         while self.__isDigit(self.__peek()):
