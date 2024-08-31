@@ -14,23 +14,27 @@ class Expr(ABC):
 
 class ExprVisitor(ABC):
     @abstractmethod
-    def visitBinaryExpr(self, expr: Binary):
+    def visitBinaryExpr(self, expr: BinaryExpr):
         raise NotImplementedError
 
     @abstractmethod
-    def visitGroupingExpr(self, expr: Grouping):
+    def visitGroupingExpr(self, expr: GroupingExpr):
         raise NotImplementedError
 
     @abstractmethod
-    def visitLiteralExpr(self, expr: Literal):
+    def visitLiteralExpr(self, expr: LiteralExpr):
         raise NotImplementedError
 
     @abstractmethod
-    def visitUnaryExpr(self, expr: Unary):
+    def visitUnaryExpr(self, expr: UnaryExpr):
+        raise NotImplementedError
+
+    @abstractmethod
+    def visitVariableExpr(self, expr: VariableExpr):
         raise NotImplementedError
 
 
-class Binary(Expr):
+class BinaryExpr(Expr):
     def __init__(self, left: Expr, operator: Token, right: Expr):
         self.left = left
         self.operator = operator
@@ -40,7 +44,7 @@ class Binary(Expr):
         return visitor.visitBinaryExpr(self)
 
 
-class Grouping(Expr):
+class GroupingExpr(Expr):
     def __init__(self, expression: Expr):
         self.expression = expression
 
@@ -48,7 +52,7 @@ class Grouping(Expr):
         return visitor.visitGroupingExpr(self)
 
 
-class Literal(Expr):
+class LiteralExpr(Expr):
     def __init__(self, value):
         self.value = value
 
@@ -56,10 +60,18 @@ class Literal(Expr):
         return visitor.visitLiteralExpr(self)
 
 
-class Unary(Expr):
+class UnaryExpr(Expr):
     def __init__(self, operator: Token, right: Expr):
         self.operator = operator
         self.right = right
 
     def accept(self, visitor: ExprVisitor):
         return visitor.visitUnaryExpr(self)
+
+
+class VariableExpr(Expr):
+    def __init__(self, name: Token):
+        self.name = name
+
+    def accept(self, visitor: ExprVisitor):
+        return visitor.visitVariableExpr(self)

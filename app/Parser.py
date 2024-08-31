@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from app.Expr import Binary, Grouping, Literal, Unary
-from app.Stmt import Stmt, Expression, Print
+from app.Expr import BinaryExpr, GroupingExpr, LiteralExpr, UnaryExpr, VariableExpr
+from app.Stmt import Stmt, ExpressionStmt, PrintStmt, VarStmt
 from app.Token import Token, TokenType
 
 
@@ -16,8 +16,19 @@ class Parser:
     def parseStmt(self):
         statements: list[Stmt] = []
         while not self.__isAtEnd():
-            statements.append(self.__statement())
+            statements.append(self.__declaration())
         return statements
+
+    def __declaration(self):
+        if self.__match(TokenType.VAR):
+            return self.__varDeclaration()
+        return self.__statement()
+
+    def __varDeclaration(self):
+        name = self.__consume(TokenType.IDENTIFIER, "Expect variable name.")
+        initializer = self.__expression() if self.__match(TokenType.EQUAL) else None
+        self.__consume(TokenType.SEMICOLON, "Expect ';' after variable declaration.")
+        return VarStmt(name, initializer)
 
     def __statement(self):
         if self.__match(TokenType.PRINT):
@@ -27,12 +38,12 @@ class Parser:
     def __expressionStatement(self):
         expression = self.__expression()
         self.__consume(TokenType.SEMICOLON, "Expect ';' after expression.")
-        return Expression(expression)
+        return ExpressionStmt(expression)
 
     def __printStatement(self):
         expression = self.__expression()
         self.__consume(TokenType.SEMICOLON, "Expect ';' after expression.")
-        return Print(expression)
+        return PrintStmt(expression)
 
     def __expression(self):
         return self.__equality()
@@ -40,47 +51,50 @@ class Parser:
     def __equality(self):
         expr = self.__comparison()
         while self.__match(TokenType.EQUAL_EQUAL, TokenType.BANG_EQUAL):
-            expr = Binary(expr, self.__previous(), self.__comparison())
+            expr = BinaryExpr(expr, self.__previous(), self.__comparison())
         return expr
 
     def __comparison(self):
         expr = self.__term()
         while self.__match(TokenType.LESS, TokenType.LESS_EQUAL, TokenType.GREATER, TokenType.GREATER_EQUAL):
-            expr = Binary(expr, self.__previous(), self.__term())
+            expr = BinaryExpr(expr, self.__previous(), self.__term())
         return expr
 
     def __term(self):
         expr = self.__factor()
         while self.__match(TokenType.MINUS, TokenType.PLUS):
-            expr = Binary(expr, self.__previous(), self.__factor())
+            expr = BinaryExpr(expr, self.__previous(), self.__factor())
         return expr
 
     def __factor(self):
         expr = self.__unary()
         while self.__match(TokenType.SLASH, TokenType.STAR):
-            expr = Binary(expr, self.__previous(), self.__unary())
+            expr = BinaryExpr(expr, self.__previous(), self.__unary())
         return expr
 
     def __unary(self):
         if self.__match(TokenType.MINUS, TokenType.BANG):
-            return Unary(self.__previous(), self.__unary())
+            return UnaryExpr(self.__previous(), self.__unary())
         return self.__primary()
 
     def __primary(self):
         if self.__match(TokenType.NIL):
-            return Literal(None)
+            return LiteralExpr(None)
         if self.__match(TokenType.FALSE):
-            return Literal(False)
+            return LiteralExpr(False)
         if self.__match(TokenType.TRUE):
-            return Literal(True)
+            return LiteralExpr(True)
 
         if self.__match(TokenType.NUMBER, TokenType.STRING):
-            return Literal(self.__previous().literal)
+            return LiteralExpr(self.__previous().literal)
+
+        if self.__match(TokenType.IDENTIFIER):
+            return VariableExpr(self.__previous())
 
         if self.__match(TokenType.LEFT_PAREN):
             expr = self.__expression()
             self.__consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.")
-            return Grouping(expr)
+            return GroupingExpr(expr)
 
         raise RuntimeError("Expect expression.")
 

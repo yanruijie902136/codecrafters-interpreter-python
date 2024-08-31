@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
 
-from app.Expr import Expr, ExprVisitor, Binary, Grouping, Literal, Unary
-from app.Stmt import Stmt, StmtVisitor, Expression, Print
+from app.Environment import Environment
+from app.Expr import Expr, ExprVisitor, BinaryExpr, GroupingExpr, LiteralExpr, UnaryExpr, VariableExpr
+from app.Stmt import Stmt, StmtVisitor, ExpressionStmt, PrintStmt, VarStmt
 from app.Token import TokenType
 
 
 class Interpreter(ExprVisitor, StmtVisitor):
+    def __init__(self):
+        self.__environment = Environment()
+
     def interpret(self, expr: Expr):
         return self.__stringify(self.__evaluate(expr))
 
@@ -13,7 +17,7 @@ class Interpreter(ExprVisitor, StmtVisitor):
         for stmt in statements:
             self.__execute(stmt)
 
-    def visitBinaryExpr(self, expr: Binary):
+    def visitBinaryExpr(self, expr: BinaryExpr):
         left, right = self.__evaluate(expr.left), self.__evaluate(expr.right)
         match expr.operator.type:
             case TokenType.STAR:
@@ -47,13 +51,13 @@ class Interpreter(ExprVisitor, StmtVisitor):
             case TokenType.EQUAL_EQUAL:
                 return left == right
 
-    def visitGroupingExpr(self, expr: Grouping):
+    def visitGroupingExpr(self, expr: GroupingExpr):
         return self.__evaluate(expr.expression)
 
-    def visitLiteralExpr(self, expr: Literal):
+    def visitLiteralExpr(self, expr: LiteralExpr):
         return expr.value
 
-    def visitUnaryExpr(self, expr: Unary):
+    def visitUnaryExpr(self, expr: UnaryExpr):
         right = self.__evaluate(expr.right)
         match expr.operator.type:
             case TokenType.MINUS:
@@ -62,11 +66,18 @@ class Interpreter(ExprVisitor, StmtVisitor):
             case TokenType.BANG:
                 return not self.__isTruthy(right)
 
-    def visitExpressionStmt(self, stmt: Expression):
+    def visitVariableExpr(self, expr: VariableExpr):
+        return self.__environment.get(expr.name)
+
+    def visitExpressionStmt(self, stmt: ExpressionStmt):
         self.__evaluate(stmt.expression)
 
-    def visitPrintStmt(self, stmt: Print):
+    def visitPrintStmt(self, stmt: PrintStmt):
         print(self.__stringify(self.__evaluate(stmt.expression)))
+
+    def visitVarStmt(self, stmt: VarStmt):
+        value = None if stmt.initializer is None else self.__evaluate(stmt.initializer)
+        self.__environment.define(stmt.name.lexeme, value)
 
     def __isTruthy(self, obj):
         return obj is not None and obj is not False
