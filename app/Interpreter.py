@@ -12,8 +12,10 @@ class Interpreter(ExprVisitor):
         left, right = self.__evaluate(expr.left), self.__evaluate(expr.right)
         match expr.operator.type:
             case TokenType.STAR:
+                self.__checkNumberOperands(left, right)
                 return left * right
             case TokenType.SLASH:
+                self.__checkNumberOperands(left, right)
                 return left / right
             case TokenType.MINUS:
                 return left - right
@@ -66,3 +68,7 @@ class Interpreter(ExprVisitor):
     def __checkNumberOperand(self, operand):
         if type(operand) is not float:
             raise RuntimeError("Operand must be a number.")
+
+    def __checkNumberOperands(self, left, right):
+        if type(left) is not float or type(right) is not float:
+            raise RuntimeError("Operands must be numbers.")
