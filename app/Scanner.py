@@ -73,8 +73,15 @@ class Scanner:
             case _:
                 if self.__isDigit(char):
                     self.__number()
+                elif self.__isAlpha(char):
+                    self.__identifier()
                 else:
                     self.__addLexicalError(f"Unexpected character: {char}")
+
+    def __identifier(self):
+        while self.__isAlphaNumeric(self.__peek()):
+            self.__advance()
+        self.__addToken(TokenType.IDENTIFIER)
 
     def __number(self):
         while self.__isDigit(self.__peek()):
@@ -112,6 +119,12 @@ class Scanner:
 
     def __peekNext(self):
         return "" if self.__current + 1 >= len(self.__source) else self.__source[self.__current + 1]
+
+    def __isAlphaNumeric(self, char: str):
+        return self.__isDigit(char) or self.__isAlpha(char)
+
+    def __isAlpha(self, char: str):
+        return char == "_" or char.isalpha()
 
     def __isDigit(self, char: str):
         return char.isdecimal()
