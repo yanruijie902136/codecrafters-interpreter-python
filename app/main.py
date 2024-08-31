@@ -32,7 +32,11 @@ def parse(tokens: list[Token]):
 
 
 def evaluate(expr: Expr):
-    return Interpreter().interpret(expr)
+    try:
+        return Interpreter().interpret(expr)
+    except RuntimeError as error:
+        print(error, file=sys.stderr)
+        sys.exit(70)
 
 
 def main():

@@ -42,6 +42,7 @@ class Interpreter(ExprVisitor):
         right = self.__evaluate(expr.right)
         match expr.operator.type:
             case TokenType.MINUS:
+                self.__checkNumberOperand(right)
                 return -right
             case TokenType.BANG:
                 return not self.__isTruthy(right)
@@ -61,3 +62,7 @@ class Interpreter(ExprVisitor):
         if type(obj) is float and string.endswith(".0"):
             string = string[:-2]
         return string
+
+    def __checkNumberOperand(self, operand):
+        if type(operand) is not float:
+            raise RuntimeError("Operand must be a number.")
