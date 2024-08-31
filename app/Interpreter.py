@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from app.Expr import Expr, ExprVisitor, Binary, Grouping, Literal, Unary
-from app.Stmt import Stmt, StmtVisitor, Print
+from app.Stmt import Stmt, StmtVisitor, Expression, Print
 from app.Token import TokenType
 
 
@@ -61,6 +61,9 @@ class Interpreter(ExprVisitor, StmtVisitor):
                 return -right
             case TokenType.BANG:
                 return not self.__isTruthy(right)
+
+    def visitExpressionStmt(self, stmt: Expression):
+        self.__evaluate(stmt.expression)
 
     def visitPrintStmt(self, stmt: Print):
         print(self.__stringify(self.__evaluate(stmt.expression)))

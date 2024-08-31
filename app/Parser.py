@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from app.Expr import Binary, Grouping, Literal, Unary
-from app.Stmt import Stmt, Print
+from app.Stmt import Stmt, Expression, Print
 from app.Token import Token, TokenType
 
 
@@ -22,6 +22,12 @@ class Parser:
     def __statement(self):
         if self.__match(TokenType.PRINT):
             return self.__printStatement()
+        return self.__expressionStatement()
+
+    def __expressionStatement(self):
+        expression = self.__expression()
+        self.__consume(TokenType.SEMICOLON, "Expect ';' after expression.")
+        return Expression(expression)
 
     def __printStatement(self):
         expression = self.__expression()

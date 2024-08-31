@@ -14,8 +14,20 @@ class Stmt(ABC):
 
 class StmtVisitor(ABC):
     @abstractmethod
+    def visitExpressionStmt(self, stmt: Expression):
+        raise NotImplementedError
+
+    @abstractmethod
     def visitPrintStmt(self, stmt: Print):
         raise NotImplementedError
+
+
+class Expression(Stmt):
+    def __init__(self, expression: Expr):
+        self.expression = expression
+
+    def accept(self, visitor: StmtVisitor):
+        return visitor.visitExpressionStmt(self)
 
 
 class Print(Stmt):

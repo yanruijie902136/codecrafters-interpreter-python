@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
+from typing import Union
 
 from app.AstPrinter import AstPrinter
 from app.Expr import Expr
@@ -12,7 +13,7 @@ from app.Stmt import Stmt
 from app.Token import Token
 
 
-def tokenize(fileContents: str, printTokens: bool = False):
+def scan(fileContents: str, printTokens: bool = False):
     tokens, errors = Scanner(fileContents).scanTokens()
     if printTokens:
         for token in tokens:
@@ -33,16 +34,15 @@ def parse(tokens: list[Token], isStmt: bool = False):
         sys.exit(65)
 
 
-def evaluate(expr: Expr):
+def interpret(exprOrStmts: Union[Expr, list[Stmt]]):
     try:
-        return Interpreter().interpret(expr)
+        interpreter = Interpreter()
+        if isinstance(exprOrStmts, Expr):
+            return interpreter.interpret(exprOrStmts)
+        return interpreter.interpretStmt(exprOrStmts)
     except RuntimeError as error:
         print(error, file=sys.stderr)
         sys.exit(70)
-
-
-def run(statements: list[Stmt]):
-    Interpreter().interpretStmt(statements)
 
 
 def main():
@@ -56,13 +56,13 @@ def main():
 
     match command := sys.argv[1]:
         case "tokenize":
-            tokenize(fileContents, printTokens=True)
+            scan(fileContents, printTokens=True)
         case "parse":
-            AstPrinter().print(parse(tokenize(fileContents)))
+            AstPrinter().print(parse(scan(fileContents)))
         case "evaluate":
-            print(evaluate(parse(tokenize(fileContents))))
+            print(interpret(parse(scan(fileContents))))
         case "run":
-            run(parse(tokenize(fileContents), isStmt=True))
+            interpret(parse(scan(fileContents), isStmt=True))
         case _:
             print(f"Unknown command: {command}", file=sys.stderr)
             sys.exit(1)
