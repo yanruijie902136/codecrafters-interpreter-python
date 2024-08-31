@@ -11,7 +11,7 @@ class Interpreter(ExprVisitor):
         return super().visitBinaryExpr(expr)
 
     def visitGroupingExpr(self, expr: Grouping):
-        return super().visitGroupingExpr(expr)
+        return self.__evaluate(expr.expression)
 
     def visitLiteralExpr(self, expr: Literal):
         return expr.value
