@@ -1,6 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from app.Expr import BinaryExpr, GroupingExpr, LiteralExpr, UnaryExpr, VariableExpr
+from app.Expr import (
+    BinaryExpr,
+    GroupingExpr,
+    LiteralExpr,
+    UnaryExpr,
+    VariableExpr,
+)
 from app.Stmt import Stmt, ExpressionStmt, PrintStmt, VarStmt
 from app.Token import Token, TokenType
 
