@@ -62,6 +62,10 @@ class Scanner:
                     return
                 while not self.__isAtEnd() and self.__peek() != "\n":
                     self.__advance()
+            case "\t" | " ":
+                pass
+            case "\n":
+                self.__line += 1
             case _:
                 self.__addLexicalError(f"Unexpected character: {char}")
 
