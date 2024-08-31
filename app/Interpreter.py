@@ -18,9 +18,13 @@ class Interpreter(ExprVisitor):
                 self.__checkNumberOperands(left, right)
                 return left / right
             case TokenType.MINUS:
+                self.__checkNumberOperands(left, right)
                 return left - right
             case TokenType.PLUS:
-                return left + right
+                try:
+                    return left + right
+                except TypeError:
+                    raise RuntimeError("Operands must be two numbers or two strings.")
             case TokenType.LESS:
                 return left < right
             case TokenType.LESS_EQUAL:
