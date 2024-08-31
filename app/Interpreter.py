@@ -9,7 +9,12 @@ class Interpreter(ExprVisitor):
         return self.__stringify(self.__evaluate(expr))
 
     def visitBinaryExpr(self, expr: Binary):
-        return super().visitBinaryExpr(expr)
+        left, right = self.__evaluate(expr.left), self.__evaluate(expr.right)
+        match expr.operator.type:
+            case TokenType.STAR:
+                return left * right
+            case TokenType.SLASH:
+                return left / right
 
     def visitGroupingExpr(self, expr: Grouping):
         return self.__evaluate(expr.expression)
@@ -19,9 +24,11 @@ class Interpreter(ExprVisitor):
 
     def visitUnaryExpr(self, expr: Unary):
         right = self.__evaluate(expr.right)
-        if expr.operator.type is TokenType.MINUS:
-            return -right
-        return not self.__isTruthy(right)
+        match expr.operator.type:
+            case TokenType.MINUS:
+                return -right
+            case TokenType.BANG:
+                return not self.__isTruthy(right)
 
     def __isTruthy(self, obj):
         return obj is not None and obj is not False
