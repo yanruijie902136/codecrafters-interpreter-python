@@ -23,7 +23,7 @@ class Parser:
         if self.__match(TokenType.TRUE):
             return Literal(True)
 
-        if self.__match(TokenType.NUMBER):
+        if self.__match(TokenType.NUMBER, TokenType.STRING):
             return Literal(self.__previous().literal)
 
     def __match(self, *types: TokenType):
