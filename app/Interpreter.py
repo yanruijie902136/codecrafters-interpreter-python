@@ -27,6 +27,10 @@ class Interpreter(ExprVisitor):
                 return left > right
             case TokenType.GREATER_EQUAL:
                 return left >= right
+            case TokenType.BANG_EQUAL:
+                return left != right
+            case TokenType.EQUAL_EQUAL:
+                return left == right
 
     def visitGroupingExpr(self, expr: Grouping):
         return self.__evaluate(expr.expression)
