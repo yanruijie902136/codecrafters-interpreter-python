@@ -57,14 +57,21 @@ class Parser:
 
         if self.__match(TokenType.LEFT_PAREN):
             expr = self.__expression()
-            self.__advance()
+            self.__consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.")
             return Grouping(expr)
+
+        raise RuntimeError("Expect expression.")
 
     def __match(self, *types: TokenType):
         if not any(self.__check(type) for type in types):
             return False
         self.__current += 1
         return True
+
+    def __consume(self, type: TokenType, message: str):
+        if self.__check(type):
+            return self.__advance()
+        raise RuntimeError(message)
 
     def __check(self, type: TokenType):
         return False if self.__isAtEnd() else self.__peek().type == type

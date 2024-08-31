@@ -22,8 +22,11 @@ def tokenize(fileContents: str, printTokens: bool = False):
 
 
 def parse(tokens: list[Token]):
-    return Parser(tokens).parse()
-
+    try:
+        return Parser(tokens).parse()
+    except RuntimeError as error:
+        print(error, file=sys.stderr)
+        sys.exit(65)
 
 def main():
     if len(sys.argv) < 3:
