@@ -28,7 +28,7 @@ def scan(fileContents: str, printTokens: bool = False):
 def parse(tokens: list[Token], isStmt: bool = False):
     try:
         parser = Parser(tokens)
-        return parser.parseStmt() if isStmt else parser.parse()
+        return parser.parseStmt() if isStmt else parser.parseExpr()
     except RuntimeError as error:
         print(error, file=sys.stderr)
         sys.exit(65)
@@ -38,7 +38,7 @@ def interpret(exprOrStmts: Union[Expr, list[Stmt]]):
     try:
         interpreter = Interpreter()
         if isinstance(exprOrStmts, Expr):
-            return interpreter.interpret(exprOrStmts)
+            return interpreter.interpretExpr(exprOrStmts)
         return interpreter.interpretStmt(exprOrStmts)
     except RuntimeError as error:
         print(error, file=sys.stderr)

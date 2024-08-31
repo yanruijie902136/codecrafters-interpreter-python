@@ -2,16 +2,23 @@
 
 from app.Environment import Environment
 from app.Expr import (
-    Expr,
-    ExprVisitor,
     AssignExpr,
     BinaryExpr,
+    Expr,
+    ExprVisitor,
     GroupingExpr,
     LiteralExpr,
     UnaryExpr,
     VariableExpr,
 )
-from app.Stmt import BlockStmt, Stmt, StmtVisitor, ExpressionStmt, PrintStmt, VarStmt
+from app.Stmt import (
+    BlockStmt,
+    Stmt,
+    StmtVisitor,
+    ExpressionStmt,
+    PrintStmt,
+    VarStmt,
+)
 from app.Token import TokenType
 
 
@@ -19,12 +26,16 @@ class Interpreter(ExprVisitor, StmtVisitor):
     def __init__(self):
         self.__environment = Environment()
 
-    def interpret(self, expr: Expr):
+    def interpretExpr(self, expr: Expr):
         return self.__stringify(self.__evaluate(expr))
 
     def interpretStmt(self, statements: list[Stmt]):
         for stmt in statements:
             self.__execute(stmt)
+
+    ###############
+    # ExprVisitor #
+    ###############
 
     def visitAssignExpr(self, expr: AssignExpr):
         value = self.__evaluate(expr.value)
@@ -83,8 +94,18 @@ class Interpreter(ExprVisitor, StmtVisitor):
     def visitVariableExpr(self, expr: VariableExpr):
         return self.__environment.get(expr.name)
 
+    ###############
+    # StmtVisitor #
+    ###############
+
     def visitBlockStmt(self, stmt: BlockStmt):
-        self.__executeBlock(stmt.statements, Environment(self.__environment))
+        previous = self.__environment
+        try:
+            self.__environment = Environment(self.__environment)
+            for subStmt in stmt.statements:
+                self.__execute(subStmt)
+        finally:
+            self.__environment = previous
 
     def visitExpressionStmt(self, stmt: ExpressionStmt):
         self.__evaluate(stmt.expression)
@@ -96,8 +117,9 @@ class Interpreter(ExprVisitor, StmtVisitor):
         value = None if stmt.initializer is None else self.__evaluate(stmt.initializer)
         self.__environment.define(stmt.name.lexeme, value)
 
-    def __isTruthy(self, obj):
-        return obj is not None and obj is not False
+    ###################
+    # Private methods #
+    ###################
 
     def __evaluate(self, expr: Expr):
         return expr.accept(self)
@@ -105,12 +127,16 @@ class Interpreter(ExprVisitor, StmtVisitor):
     def __stringify(self, obj):
         if obj is None:
             return "nil"
-        if type(obj) is bool:
+        elif type(obj) is bool:
+            # In Python Booleans are capitalized. In Lox they aren't.
             return str(obj).lower()
         string = str(obj)
         if type(obj) is float and string.endswith(".0"):
             string = string[:-2]
         return string
+
+    def __isTruthy(self, obj):
+        return obj is not None and obj is not False
 
     def __checkNumberOperand(self, operand):
         if type(operand) is not float:
@@ -122,12 +148,3 @@ class Interpreter(ExprVisitor, StmtVisitor):
 
     def __execute(self, stmt: Stmt):
         stmt.accept(self)
-
-    def __executeBlock(self, statements: list[Stmt], environment: Environment):
-        previous = self.__environment
-        try:
-            self.__environment = environment
-            for stmt in statements:
-                self.__execute(stmt)
-        finally:
-            self.__environment = previous

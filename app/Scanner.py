@@ -29,7 +29,7 @@ class Scanner:
             # We are at the beginning of the next lexeme.
             self.__start = self.__current
             self.__scanToken()
-        self.__tokens.append(Token(TokenType.EOF))
+        self.__tokens.append(Token(TokenType.EOF, line=self.__line))
         return self.__tokens, self.__lexicalErrors
 
     def __scanToken(self):
@@ -146,7 +146,7 @@ class Scanner:
 
     def __addToken(self, type: TokenType, literal: TokenLiteral = None):
         lexeme = self.__source[self.__start:self.__current]
-        self.__tokens.append(Token(type, lexeme, literal))
+        self.__tokens.append(Token(type, lexeme, literal, self.__line))
 
     def __addLexicalError(self, message: str):
         self.__lexicalErrors.append(LexicalError(self.__line, message))

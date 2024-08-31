@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from app.Expr import (
-    Expr,
-    ExprVisitor,
     AssignExpr,
     BinaryExpr,
+    Expr,
+    ExprVisitor,
     GroupingExpr,
     LiteralExpr,
     UnaryExpr,
@@ -29,6 +29,7 @@ class AstPrinter(ExprVisitor):
         if expr.value is None:
             return "nil"
         if type(expr.value) is bool:
+            # In Python Booleans are capitalized. In Lox they aren't.
             return str(expr.value).lower()
         return str(expr.value)
 
