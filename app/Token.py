@@ -29,8 +29,8 @@ TokenLiteral = Optional[Union[str, float]]
 @dataclass
 class Token:
     type: TokenType
-    lexeme: str = ""
-    literal: TokenLiteral = None
+    lexeme: str
+    literal: TokenLiteral
     line: int
 
     def __str__(self):
