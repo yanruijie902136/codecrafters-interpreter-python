@@ -48,8 +48,16 @@ class Scanner:
                 self.__addToken(TokenType.SEMICOLON)
             case "*":
                 self.__addToken(TokenType.STAR)
+            case "=":
+                self.__addToken(TokenType.EQUAL_EQUAL if self.__match("=") else TokenType.EQUAL)
             case _:
                 self.__addLexicalError(f"Unexpected character: {char}")
+
+    def __match(self, char: str):
+        if self.__isAtEnd() or self.__source[self.__current] != char:
+            return False
+        self.__current += 1
+        return True
 
     def __isAtEnd(self):
         return self.__current >= len(self.__source)
