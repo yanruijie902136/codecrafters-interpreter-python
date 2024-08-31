@@ -13,7 +13,13 @@ class Parser:
         return self.__expression()
 
     def __expression(self):
-        return self.__factor()
+        return self.__term()
+
+    def __term(self):
+        expr = self.__factor()
+        while self.__match(TokenType.MINUS, TokenType.PLUS):
+            expr = Binary(expr, self.__previous(), self.__factor())
+        return expr
 
     def __factor(self):
         expr = self.__unary()
