@@ -13,7 +13,13 @@ class Parser:
         return self.__expression()
 
     def __expression(self):
-        return self.__term()
+        return self.__comparison()
+
+    def __comparison(self):
+        expr = self.__term()
+        while self.__match(TokenType.LESS, TokenType.LESS_EQUAL, TokenType.GREATER, TokenType.GREATER_EQUAL):
+            expr = Binary(expr, self.__previous(), self.__term())
+        return expr
 
     def __term(self):
         expr = self.__factor()
