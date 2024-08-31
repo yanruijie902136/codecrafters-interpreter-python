@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from app.Expr import Grouping, Literal
+from app.Expr import Grouping, Literal, Unary
 from app.Token import Token, TokenType
 
 
@@ -13,6 +13,11 @@ class Parser:
         return self.__expression()
 
     def __expression(self):
+        return self.__unary()
+
+    def __unary(self):
+        if self.__match(TokenType.MINUS, TokenType.BANG):
+            return Unary(self.__previous(), self.__unary())
         return self.__primary()
 
     def __primary(self):

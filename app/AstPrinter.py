@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from app.Expr import Expr, ExprVisitor, Grouping, Literal
+from app.Expr import Expr, ExprVisitor, Grouping, Literal, Unary
 
 
 class AstPrinter(ExprVisitor):
@@ -16,3 +16,6 @@ class AstPrinter(ExprVisitor):
         if type(expr.value) is bool:
             return str(expr.value).lower()
         return str(expr.value)
+
+    def visitUnaryExpr(self, expr: Unary):
+        return f"({expr.operator.lexeme} {expr.right.accept(self)})"

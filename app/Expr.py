@@ -3,6 +3,8 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
 
+from app.Token import Token
+
 
 class Expr(ABC):
     @abstractmethod
@@ -17,6 +19,10 @@ class ExprVisitor(ABC):
 
     @abstractmethod
     def visitLiteralExpr(self, expr: Literal):
+        raise NotImplementedError
+
+    @abstractmethod
+    def visitUnaryExpr(self, expr: Unary):
         raise NotImplementedError
 
 
@@ -34,3 +40,12 @@ class Literal(Expr):
 
     def accept(self, visitor: ExprVisitor):
         return visitor.visitLiteralExpr(self)
+
+
+class Unary(Expr):
+    def __init__(self, operator: Token, right: Expr):
+        self.operator = operator
+        self.right = right
+
+    def accept(self, visitor: ExprVisitor):
+        return visitor.visitUnaryExpr(self)
