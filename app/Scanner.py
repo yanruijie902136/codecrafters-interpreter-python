@@ -29,6 +29,18 @@ class Scanner:
                 self.__addToken(TokenType.LEFT_BRACE)
             case "}":
                 self.__addToken(TokenType.RIGHT_BRACE)
+            case ",":
+                self.__addToken(TokenType.COMMA)
+            case ".":
+                self.__addToken(TokenType.DOT)
+            case "-":
+                self.__addToken(TokenType.MINUS)
+            case "+":
+                self.__addToken(TokenType.PLUS)
+            case ";":
+                self.__addToken(TokenType.SEMICOLON)
+            case "*":
+                self.__addToken(TokenType.STAR)
 
     def __isAtEnd(self):
         return self.__current >= len(self.__source)
