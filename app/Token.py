@@ -5,18 +5,14 @@ from enum import Enum
 from typing import Optional, Union
 
 
-KEYWORDS = [
-    "and", "class", "else", "false", "for", "fun", "if", "nil", "or", "print",
-    "return", "super", "this", "true", "var", "while",
-]
-
-
 TokenType = Enum("TokenType", [
     "EOF", "LEFT_PAREN", "RIGHT_PAREN", "LEFT_BRACE", "RIGHT_BRACE", "COMMA",
     "DOT", "MINUS", "PLUS", "SEMICOLON", "STAR", "EQUAL", "EQUAL_EQUAL", "BANG",
     "BANG_EQUAL", "LESS", "LESS_EQUAL", "GREATER", "GREATER_EQUAL", "SLASH",
-    "STRING", "NUMBER", "IDENTIFIER",
-] + [keyword.upper() for keyword in KEYWORDS])
+    "STRING", "NUMBER", "IDENTIFIER", "AND", "CLASS", "ELSE", "FALSE", "FOR",
+    "FUN", "IF", "NIL", "OR", "PRINT", "RETURN", "SUPER", "THIS", "TRUE", "VAR",
+    "WHILE",
+])
 TokenLiteral = Optional[Union[str, float]]
 
 

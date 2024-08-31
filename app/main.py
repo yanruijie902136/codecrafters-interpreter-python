@@ -3,7 +3,26 @@
 
 import sys
 
+from app.AstPrinter import AstPrinter
+from app.Parser import Parser
 from app.Scanner import Scanner
+from app.Token import Token
+
+
+def tokenize(fileContents: str, printTokens: bool = False):
+    tokens, errors = Scanner(fileContents).scanTokens()
+    if printTokens:
+        for token in tokens:
+            print(token)
+    if errors:
+        for line, message in errors:
+            print(f"[line {line}] Error: {message}", file=sys.stderr)
+        sys.exit(65)
+    return tokens
+
+
+def parse(tokens: list[Token]):
+    return Parser(tokens).parse()
 
 
 def main():
@@ -11,22 +30,18 @@ def main():
         print("Usage: ./your_program.sh <command> <filename>", file=sys.stderr)
         sys.exit(1)
 
-    command = sys.argv[1]
-    if command not in ["tokenize"]:
-        print(f"Unknown command: {command}", file=sys.stderr)
-        sys.exit(1)
-
     fileName = sys.argv[2]
     with open(fileName) as file:
         fileContents = file.read()
 
-    tokens, errors = Scanner(fileContents).scanTokens()
-    for token in tokens:
-        print(token)
-    if errors:
-        for line, message in errors:
-            print(f"[line {line}] Error: {message}", file=sys.stderr)
-        sys.exit(65)
+    match command := sys.argv[1]:
+        case "tokenize":
+            tokenize(fileContents, printTokens=True)
+        case "parse":
+            AstPrinter().print(parse(tokenize(fileContents)))
+        case _:
+            print(f"Unknown command: {command}", file=sys.stderr)
+            sys.exit(1)
 
 
 if __name__ == "__main__":

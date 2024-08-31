@@ -2,7 +2,13 @@
 
 from collections import namedtuple
 
-from app.Token import KEYWORDS, Token, TokenLiteral, TokenType
+from app.Token import Token, TokenLiteral, TokenType
+
+
+KEYWORDS = [
+    "and", "class", "else", "false", "for", "fun", "if", "nil", "or", "print",
+    "return", "super", "this", "true", "var", "while",
+]
 
 
 LexicalError = namedtuple("LexicalError", ("line", "message"))
