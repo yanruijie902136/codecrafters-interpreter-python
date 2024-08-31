@@ -56,6 +56,12 @@ class Scanner:
                 self.__addToken(TokenType.LESS_EQUAL if self.__match("=") else TokenType.LESS)
             case ">":
                 self.__addToken(TokenType.GREATER_EQUAL if self.__match("=") else TokenType.GREATER)
+            case "/":
+                if not self.__match("/"):
+                    self.__addToken(TokenType.SLASH)
+                    return
+                while not self.__isAtEnd() and self.__peek() != "\n":
+                    self.__advance()
             case _:
                 self.__addLexicalError(f"Unexpected character: {char}")
 
@@ -64,6 +70,9 @@ class Scanner:
             return False
         self.__current += 1
         return True
+
+    def __peek(self):
+        return "" if self.__isAtEnd() else self.__source[self.__current]
 
     def __isAtEnd(self):
         return self.__current >= len(self.__source)
