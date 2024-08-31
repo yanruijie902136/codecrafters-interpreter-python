@@ -26,12 +26,16 @@ class Interpreter(ExprVisitor):
                 except TypeError:
                     raise RuntimeError("Operands must be two numbers or two strings.")
             case TokenType.LESS:
+                self.__checkNumberOperands(left, right)
                 return left < right
             case TokenType.LESS_EQUAL:
+                self.__checkNumberOperands(left, right)
                 return left <= right
             case TokenType.GREATER:
+                self.__checkNumberOperands(left, right)
                 return left > right
             case TokenType.GREATER_EQUAL:
+                self.__checkNumberOperands(left, right)
                 return left >= right
             case TokenType.BANG_EQUAL:
                 return left != right
