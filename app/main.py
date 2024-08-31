@@ -4,6 +4,8 @@
 import sys
 
 from app.AstPrinter import AstPrinter
+from app.Expr import Expr
+from app.Interpreter import Interpreter
 from app.Parser import Parser
 from app.Scanner import Scanner
 from app.Token import Token
@@ -28,6 +30,11 @@ def parse(tokens: list[Token]):
         print(error, file=sys.stderr)
         sys.exit(65)
 
+
+def evaluate(expr: Expr):
+    return Interpreter().interpret(expr)
+
+
 def main():
     if len(sys.argv) < 3:
         print("Usage: ./your_program.sh <command> <filename>", file=sys.stderr)
@@ -42,6 +49,8 @@ def main():
             tokenize(fileContents, printTokens=True)
         case "parse":
             AstPrinter().print(parse(tokenize(fileContents)))
+        case "evaluate":
+            print(evaluate(parse(tokenize(fileContents))))
         case _:
             print(f"Unknown command: {command}", file=sys.stderr)
             sys.exit(1)
