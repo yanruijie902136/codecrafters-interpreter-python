@@ -66,8 +66,21 @@ class Scanner:
                 pass
             case "\n":
                 self.__line += 1
+            case "\"":
+                self.__string()
             case _:
                 self.__addLexicalError(f"Unexpected character: {char}")
+
+    def __string(self):
+        while not self.__isAtEnd() and self.__peek() != "\"":
+            if self.__advance() == "\n":
+                self.__line += 1
+        if self.__isAtEnd():
+            self.__addLexicalError("Unterminated string.")
+            return
+        self.__advance()
+        value = self.__source[self.__start + 1:self.__current - 1]
+        self.__addToken(TokenType.STRING, value)
 
     def __match(self, char: str):
         if self.__isAtEnd() or self.__source[self.__current] != char:
