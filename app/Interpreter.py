@@ -9,8 +9,9 @@ class Interpreter(ExprVisitor, StmtVisitor):
     def interpret(self, expr: Expr):
         return self.__stringify(self.__evaluate(expr))
 
-    def interpretStmt(self, stmt: Stmt):
-        self.__execute(stmt)
+    def interpretStmt(self, statements: list[Stmt]):
+        for stmt in statements:
+            self.__execute(stmt)
 
     def visitBinaryExpr(self, expr: Binary):
         left, right = self.__evaluate(expr.left), self.__evaluate(expr.right)

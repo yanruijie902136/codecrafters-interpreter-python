@@ -14,7 +14,10 @@ class Parser:
         return self.__expression()
 
     def parseStmt(self):
-        return self.__statement()
+        statements: list[Stmt] = []
+        while not self.__isAtEnd():
+            statements.append(self.__statement())
+        return statements
 
     def __statement(self):
         if self.__match(TokenType.PRINT):

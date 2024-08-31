@@ -8,6 +8,7 @@ from app.Expr import Expr
 from app.Interpreter import Interpreter
 from app.Parser import Parser
 from app.Scanner import Scanner
+from app.Stmt import Stmt
 from app.Token import Token
 
 
@@ -40,8 +41,8 @@ def evaluate(expr: Expr):
         sys.exit(70)
 
 
-def run(stmt: Expr):
-    Interpreter().interpretStmt(stmt)
+def run(statements: list[Stmt]):
+    Interpreter().interpretStmt(statements)
 
 
 def main():
