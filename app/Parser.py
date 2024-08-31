@@ -23,6 +23,9 @@ class Parser:
         if self.__match(TokenType.TRUE):
             return Literal(True)
 
+        if self.__match(TokenType.NUMBER):
+            return Literal(self.__previous().literal)
+
     def __match(self, *types: TokenType):
         if not any(self.__check(type) for type in types):
             return False
