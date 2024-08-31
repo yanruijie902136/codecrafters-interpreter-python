@@ -16,6 +16,10 @@ class Stmt(ABC):
 
 class StmtVisitor(ABC):
     @abstractmethod
+    def visitBlockStmt(self, stmt: BlockStmt):
+        raise NotImplementedError
+
+    @abstractmethod
     def visitExpressionStmt(self, stmt: ExpressionStmt):
         raise NotImplementedError
 
@@ -26,6 +30,14 @@ class StmtVisitor(ABC):
     @abstractmethod
     def visitVarStmt(self, stmt: VarStmt):
         raise NotImplementedError
+
+
+class BlockStmt(Stmt):
+    def __init__(self, statements: list[Stmt]):
+        self.statements = statements
+
+    def accept(self, visitor: StmtVisitor):
+        return visitor.visitBlockStmt(self)
 
 
 class ExpressionStmt(Stmt):

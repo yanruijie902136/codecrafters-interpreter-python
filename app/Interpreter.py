@@ -11,7 +11,7 @@ from app.Expr import (
     UnaryExpr,
     VariableExpr,
 )
-from app.Stmt import Stmt, StmtVisitor, ExpressionStmt, PrintStmt, VarStmt
+from app.Stmt import BlockStmt, Stmt, StmtVisitor, ExpressionStmt, PrintStmt, VarStmt
 from app.Token import TokenType
 
 
@@ -83,6 +83,9 @@ class Interpreter(ExprVisitor, StmtVisitor):
     def visitVariableExpr(self, expr: VariableExpr):
         return self.__environment.get(expr.name)
 
+    def visitBlockStmt(self, stmt: BlockStmt):
+        self.__executeBlock(stmt.statements, Environment(self.__environment))
+
     def visitExpressionStmt(self, stmt: ExpressionStmt):
         self.__evaluate(stmt.expression)
 
@@ -119,3 +122,12 @@ class Interpreter(ExprVisitor, StmtVisitor):
 
     def __execute(self, stmt: Stmt):
         stmt.accept(self)
+
+    def __executeBlock(self, statements: list[Stmt], environment: Environment):
+        previous = self.__environment
+        try:
+            self.__environment = environment
+            for stmt in statements:
+                self.__execute(stmt)
+        finally:
+            self.__environment = previous

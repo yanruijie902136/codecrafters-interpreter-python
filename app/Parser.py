@@ -8,7 +8,7 @@ from app.Expr import (
     UnaryExpr,
     VariableExpr,
 )
-from app.Stmt import Stmt, ExpressionStmt, PrintStmt, VarStmt
+from app.Stmt import Stmt, BlockStmt, ExpressionStmt, PrintStmt, VarStmt
 from app.Token import Token, TokenType
 
 
@@ -40,7 +40,16 @@ class Parser:
     def __statement(self):
         if self.__match(TokenType.PRINT):
             return self.__printStatement()
+        if self.__match(TokenType.LEFT_BRACE):
+            return BlockStmt(self.__block())
         return self.__expressionStatement()
+
+    def __block(self):
+        statements: list[Stmt] = []
+        while not self.__check(TokenType.RIGHT_BRACE) and not self.__isAtEnd():
+            statements.append(self.__declaration())
+        self.__consume(TokenType.RIGHT_BRACE, "Expect '}' after block.")
+        return statements
 
     def __expressionStatement(self):
         expression = self.__expression()
