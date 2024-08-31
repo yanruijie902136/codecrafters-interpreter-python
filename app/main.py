@@ -20,9 +20,13 @@ def main():
     with open(fileName) as file:
         fileContents = file.read()
 
-    tokens = Scanner(fileContents).scanTokens()
+    tokens, errors = Scanner(fileContents).scanTokens()
     for token in tokens:
         print(token)
+    if errors:
+        for line, message in errors:
+            print(f"[line {line}] Error: {message}", file=sys.stderr)
+        sys.exit(65)
 
 
 if __name__ == "__main__":

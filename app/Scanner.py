@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
 
+from collections import namedtuple
+
 from app.Token import Token, TokenLiteral, TokenType
+
+
+LexicalError = namedtuple("LexicalError", ("line", "message"))
 
 
 class Scanner:
@@ -8,8 +13,10 @@ class Scanner:
         self.__source = source
         self.__start = 0
         self.__current = 0
+        self.__line = 1
 
         self.__tokens: list[Token] = []
+        self.__lexicalErrors: list[LexicalError] = []
 
     def scanTokens(self):
         while not self.__isAtEnd():
@@ -17,10 +24,10 @@ class Scanner:
             self.__start = self.__current
             self.__scanToken()
         self.__tokens.append(Token(TokenType.EOF))
-        return self.__tokens
+        return self.__tokens, self.__lexicalErrors
 
     def __scanToken(self):
-        match self.__advance():
+        match char := self.__advance():
             case "(":
                 self.__addToken(TokenType.LEFT_PAREN)
             case ")":
@@ -41,6 +48,8 @@ class Scanner:
                 self.__addToken(TokenType.SEMICOLON)
             case "*":
                 self.__addToken(TokenType.STAR)
+            case _:
+                self.__addLexicalError(f"Unexpected character: {char}")
 
     def __isAtEnd(self):
         return self.__current >= len(self.__source)
@@ -53,3 +62,6 @@ class Scanner:
     def __addToken(self, type: TokenType, literal: TokenLiteral = None):
         lexeme = self.__source[self.__start:self.__current]
         self.__tokens.append(Token(type, lexeme, literal))
+
+    def __addLexicalError(self, message: str):
+        self.__lexicalErrors.append(LexicalError(self.__line, message))
