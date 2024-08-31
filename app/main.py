@@ -1,4 +1,9 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 import sys
+
+from app.Scanner import Scanner
 
 
 def main():
@@ -15,10 +20,9 @@ def main():
     with open(fileName) as file:
         fileContents = file.read()
 
-    if fileContents:
-        raise NotImplementedError("Scanner not implemented")
-    else:
-        print("EOF  null")
+    tokens = Scanner(fileContents).scanTokens()
+    for token in tokens:
+        print(token)
 
 
 if __name__ == "__main__":
