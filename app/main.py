@@ -23,9 +23,10 @@ def tokenize(fileContents: str, printTokens: bool = False):
     return tokens
 
 
-def parse(tokens: list[Token]):
+def parse(tokens: list[Token], isStmt: bool = False):
     try:
-        return Parser(tokens).parse()
+        parser = Parser(tokens)
+        return parser.parseStmt() if isStmt else parser.parse()
     except RuntimeError as error:
         print(error, file=sys.stderr)
         sys.exit(65)
@@ -37,6 +38,10 @@ def evaluate(expr: Expr):
     except RuntimeError as error:
         print(error, file=sys.stderr)
         sys.exit(70)
+
+
+def run(stmt: Expr):
+    Interpreter().interpretStmt(stmt)
 
 
 def main():
@@ -55,6 +60,8 @@ def main():
             AstPrinter().print(parse(tokenize(fileContents)))
         case "evaluate":
             print(evaluate(parse(tokenize(fileContents))))
+        case "run":
+            run(parse(tokenize(fileContents), isStmt=True))
         case _:
             print(f"Unknown command: {command}", file=sys.stderr)
             sys.exit(1)

@@ -1,12 +1,16 @@
 # -*- coding: utf-8 -*-
 
 from app.Expr import Expr, ExprVisitor, Binary, Grouping, Literal, Unary
+from app.Stmt import Stmt, StmtVisitor, Print
 from app.Token import TokenType
 
 
-class Interpreter(ExprVisitor):
+class Interpreter(ExprVisitor, StmtVisitor):
     def interpret(self, expr: Expr):
         return self.__stringify(self.__evaluate(expr))
+
+    def interpretStmt(self, stmt: Stmt):
+        self.__execute(stmt)
 
     def visitBinaryExpr(self, expr: Binary):
         left, right = self.__evaluate(expr.left), self.__evaluate(expr.right)
@@ -57,6 +61,9 @@ class Interpreter(ExprVisitor):
             case TokenType.BANG:
                 return not self.__isTruthy(right)
 
+    def visitPrintStmt(self, stmt: Print):
+        print(self.__stringify(self.__evaluate(stmt.expression)))
+
     def __isTruthy(self, obj):
         return obj is not None and obj is not False
 
@@ -80,3 +87,6 @@ class Interpreter(ExprVisitor):
     def __checkNumberOperands(self, left, right):
         if type(left) is not float or type(right) is not float:
             raise RuntimeError("Operands must be numbers.")
+
+    def __execute(self, stmt: Stmt):
+        stmt.accept(self)

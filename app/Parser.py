@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from app.Expr import Binary, Grouping, Literal, Unary
+from app.Stmt import Stmt, Print
 from app.Token import Token, TokenType
 
 
@@ -11,6 +12,18 @@ class Parser:
 
     def parse(self):
         return self.__expression()
+
+    def parseStmt(self):
+        return self.__statement()
+
+    def __statement(self):
+        if self.__match(TokenType.PRINT):
+            return self.__printStatement()
+
+    def __printStatement(self):
+        expression = self.__expression()
+        self.__consume(TokenType.SEMICOLON, "Expect ';' after expression.")
+        return Print(expression)
 
     def __expression(self):
         return self.__equality()
@@ -74,7 +87,7 @@ class Parser:
         raise RuntimeError(message)
 
     def __check(self, type: TokenType):
-        return False if self.__isAtEnd() else self.__peek().type == type
+        return False if self.__isAtEnd() else self.__peek().type is type
 
     def __advance(self):
         if not self.__isAtEnd():
@@ -82,7 +95,7 @@ class Parser:
         return self.__previous()
 
     def __isAtEnd(self):
-        return self.__peek().type == TokenType.EOF
+        return self.__peek().type is TokenType.EOF
 
     def __peek(self):
         return self.__tokens[self.__current]
