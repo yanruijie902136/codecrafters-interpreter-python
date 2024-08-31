@@ -1,6 +1,14 @@
 # -*- coding: utf-8 -*-
 
-from app.Expr import Expr, ExprVisitor, BinaryExpr, GroupingExpr, LiteralExpr, UnaryExpr, VariableExpr
+from app.Expr import (
+    Expr,
+    ExprVisitor,
+    BinaryExpr,
+    GroupingExpr,
+    LiteralExpr,
+    UnaryExpr,
+    VariableExpr,
+)
 
 
 class AstPrinter(ExprVisitor):

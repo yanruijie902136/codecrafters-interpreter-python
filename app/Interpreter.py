@@ -1,7 +1,15 @@
 # -*- coding: utf-8 -*-
 
 from app.Environment import Environment
-from app.Expr import Expr, ExprVisitor, BinaryExpr, GroupingExpr, LiteralExpr, UnaryExpr, VariableExpr
+from app.Expr import (
+    Expr,
+    ExprVisitor,
+    BinaryExpr,
+    GroupingExpr,
+    LiteralExpr,
+    UnaryExpr,
+    VariableExpr,
+)
 from app.Stmt import Stmt, StmtVisitor, ExpressionStmt, PrintStmt, VarStmt
 from app.Token import TokenType
 
