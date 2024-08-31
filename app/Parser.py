@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from app.Expr import (
+    AssignExpr,
     BinaryExpr,
     GroupingExpr,
     LiteralExpr,
@@ -52,7 +53,17 @@ class Parser:
         return PrintStmt(expression)
 
     def __expression(self):
-        return self.__equality()
+        return self.__assignment()
+
+    def __assignment(self):
+        expr = self.__equality()
+        if self.__match(TokenType.EQUAL):
+            _ = self.__previous()
+            value = self.__assignment()
+            if isinstance(expr, VariableExpr):
+                return AssignExpr(expr.name, value)
+            raise RuntimeError("Invalid assignment target.")
+        return expr
 
     def __equality(self):
         expr = self.__comparison()

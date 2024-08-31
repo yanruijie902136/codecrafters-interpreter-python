@@ -14,3 +14,9 @@ class Environment:
         if name.lexeme in self.__values:
             return self.__values[name.lexeme]
         raise RuntimeError(f"Undefined variable '{name.lexeme}'.")
+
+    def assign(self, name: Token, value):
+        if name.lexeme in self.__values:
+            self.__values[name.lexeme] = value
+            return
+        raise RuntimeError(f"Undefined variable '{name.lexeme}'.")

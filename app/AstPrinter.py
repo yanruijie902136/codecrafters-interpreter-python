@@ -3,6 +3,7 @@
 from app.Expr import (
     Expr,
     ExprVisitor,
+    AssignExpr,
     BinaryExpr,
     GroupingExpr,
     LiteralExpr,
@@ -14,6 +15,9 @@ from app.Expr import (
 class AstPrinter(ExprVisitor):
     def print(self, expr: Expr):
         print(expr.accept(self))
+
+    def visitAssignExpr(self, expr: AssignExpr):
+        return f"(= {expr.name.lexeme} {expr.value.accept(self)})"
 
     def visitBinaryExpr(self, expr: BinaryExpr):
         return f"({expr.operator.lexeme} {expr.left.accept(self)} {expr.right.accept(self)})"

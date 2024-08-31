@@ -4,6 +4,7 @@ from app.Environment import Environment
 from app.Expr import (
     Expr,
     ExprVisitor,
+    AssignExpr,
     BinaryExpr,
     GroupingExpr,
     LiteralExpr,
@@ -24,6 +25,11 @@ class Interpreter(ExprVisitor, StmtVisitor):
     def interpretStmt(self, statements: list[Stmt]):
         for stmt in statements:
             self.__execute(stmt)
+
+    def visitAssignExpr(self, expr: AssignExpr):
+        value = self.__evaluate(expr.value)
+        self.__environment.assign(expr.name, value)
+        return value
 
     def visitBinaryExpr(self, expr: BinaryExpr):
         left, right = self.__evaluate(expr.left), self.__evaluate(expr.right)
