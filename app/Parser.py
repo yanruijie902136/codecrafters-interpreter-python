@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from app.Expr import Grouping, Literal, Unary
+from app.Expr import Binary, Grouping, Literal, Unary
 from app.Token import Token, TokenType
 
 
@@ -13,7 +13,13 @@ class Parser:
         return self.__expression()
 
     def __expression(self):
-        return self.__unary()
+        return self.__factor()
+
+    def __factor(self):
+        expr = self.__unary()
+        while self.__match(TokenType.SLASH, TokenType.STAR):
+            expr = Binary(expr, self.__previous(), self.__unary())
+        return expr
 
     def __unary(self):
         if self.__match(TokenType.MINUS, TokenType.BANG):

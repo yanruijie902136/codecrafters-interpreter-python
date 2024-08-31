@@ -14,6 +14,10 @@ class Expr(ABC):
 
 class ExprVisitor(ABC):
     @abstractmethod
+    def visitBinaryExpr(self, expr: Binary):
+        raise NotImplementedError
+
+    @abstractmethod
     def visitGroupingExpr(self, expr: Grouping):
         raise NotImplementedError
 
@@ -24,6 +28,16 @@ class ExprVisitor(ABC):
     @abstractmethod
     def visitUnaryExpr(self, expr: Unary):
         raise NotImplementedError
+
+
+class Binary(Expr):
+    def __init__(self, left: Expr, operator: Token, right: Expr):
+        self.left = left
+        self.operator = operator
+        self.right = right
+
+    def accept(self, visitor: ExprVisitor):
+        return visitor.visitBinaryExpr(self)
 
 
 class Grouping(Expr):

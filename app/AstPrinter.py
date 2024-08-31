@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 
-from app.Expr import Expr, ExprVisitor, Grouping, Literal, Unary
+from app.Expr import Expr, ExprVisitor, Binary, Grouping, Literal, Unary
 
 
 class AstPrinter(ExprVisitor):
     def print(self, expr: Expr):
         print(expr.accept(self))
+
+    def visitBinaryExpr(self, expr: Binary):
+        return f"({expr.operator.lexeme} {expr.left.accept(self)} {expr.right.accept(self)})"
 
     def visitGroupingExpr(self, expr: Grouping):
         return f"(group {expr.expression.accept(self)})"
