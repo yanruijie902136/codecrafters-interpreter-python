@@ -5,7 +5,9 @@ from enum import Enum
 from typing import Optional, Union
 
 
-TokenType = Enum("TokenType", ["EOF", "LEFT_PAREN", "RIGHT_PAREN"])
+TokenType = Enum("TokenType", [
+    "EOF", "LEFT_PAREN", "RIGHT_PAREN", "LEFT_BRACE", "RIGHT_BRACE",
+])
 TokenLiteral = Optional[Union[str, float]]
 
 

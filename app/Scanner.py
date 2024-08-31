@@ -25,6 +25,10 @@ class Scanner:
                 self.__addToken(TokenType.LEFT_PAREN)
             case ")":
                 self.__addToken(TokenType.RIGHT_PAREN)
+            case "{":
+                self.__addToken(TokenType.LEFT_BRACE)
+            case "}":
+                self.__addToken(TokenType.RIGHT_BRACE)
 
     def __isAtEnd(self):
         return self.__current >= len(self.__source)
