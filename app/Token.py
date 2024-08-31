@@ -7,7 +7,8 @@ from typing import Optional, Union
 
 TokenType = Enum("TokenType", [
     "EOF", "LEFT_PAREN", "RIGHT_PAREN", "LEFT_BRACE", "RIGHT_BRACE", "COMMA",
-    "DOT", "MINUS", "PLUS", "SEMICOLON", "STAR", "EQUAL", "EQUAL_EQUAL",
+    "DOT", "MINUS", "PLUS", "SEMICOLON", "STAR", "EQUAL", "EQUAL_EQUAL", "BANG",
+    "BANG_EQUAL",
 ])
 TokenLiteral = Optional[Union[str, float]]
 

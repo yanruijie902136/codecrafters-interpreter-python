@@ -50,6 +50,8 @@ class Scanner:
                 self.__addToken(TokenType.STAR)
             case "=":
                 self.__addToken(TokenType.EQUAL_EQUAL if self.__match("=") else TokenType.EQUAL)
+            case "!":
+                self.__addToken(TokenType.BANG_EQUAL if self.__match("=") else TokenType.BANG)
             case _:
                 self.__addLexicalError(f"Unexpected character: {char}")
 
