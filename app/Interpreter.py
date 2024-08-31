@@ -15,6 +15,10 @@ class Interpreter(ExprVisitor):
                 return left * right
             case TokenType.SLASH:
                 return left / right
+            case TokenType.MINUS:
+                return left - right
+            case TokenType.PLUS:
+                return left + right
 
     def visitGroupingExpr(self, expr: Grouping):
         return self.__evaluate(expr.expression)
