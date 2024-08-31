@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from app.Expr import Literal
+from app.Expr import Grouping, Literal
 from app.Token import Token, TokenType
 
 
@@ -25,6 +25,11 @@ class Parser:
 
         if self.__match(TokenType.NUMBER, TokenType.STRING):
             return Literal(self.__previous().literal)
+
+        if self.__match(TokenType.LEFT_PAREN):
+            expr = self.__expression()
+            self.__advance()
+            return Grouping(expr)
 
     def __match(self, *types: TokenType):
         if not any(self.__check(type) for type in types):

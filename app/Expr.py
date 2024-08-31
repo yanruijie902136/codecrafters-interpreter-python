@@ -12,8 +12,20 @@ class Expr(ABC):
 
 class ExprVisitor(ABC):
     @abstractmethod
+    def visitGroupingExpr(self, expr: Grouping):
+        raise NotImplementedError
+
+    @abstractmethod
     def visitLiteralExpr(self, expr: Literal):
         raise NotImplementedError
+
+
+class Grouping(Expr):
+    def __init__(self, expression: Expr):
+        self.expression = expression
+
+    def accept(self, visitor: ExprVisitor):
+        return visitor.visitGroupingExpr(self)
 
 
 class Literal(Expr):
