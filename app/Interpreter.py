@@ -19,6 +19,14 @@ class Interpreter(ExprVisitor):
                 return left - right
             case TokenType.PLUS:
                 return left + right
+            case TokenType.LESS:
+                return left < right
+            case TokenType.LESS_EQUAL:
+                return left <= right
+            case TokenType.GREATER:
+                return left > right
+            case TokenType.GREATER_EQUAL:
+                return left >= right
 
     def visitGroupingExpr(self, expr: Grouping):
         return self.__evaluate(expr.expression)
