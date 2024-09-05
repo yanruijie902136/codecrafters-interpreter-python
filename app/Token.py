@@ -23,14 +23,13 @@ TokenType = Enum("TokenType", [
 
     "EOF",
 ])
-TokenLiteral = Optional[Union[str, float]]
 
 
 @dataclass
 class Token:
     type: TokenType
     lexeme: str
-    literal: TokenLiteral
+    literal: object
     line: int
 
     def __str__(self):

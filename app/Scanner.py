@@ -2,7 +2,7 @@
 
 from collections import namedtuple
 
-from app.Token import Token, TokenLiteral, TokenType
+from app.Token import Token, TokenType
 
 
 KEYWORDS = [
@@ -144,7 +144,7 @@ class Scanner:
         self.__current += 1
         return char
 
-    def __addToken(self, type: TokenType, literal: TokenLiteral = None):
+    def __addToken(self, type: TokenType, literal: object = None):
         lexeme = self.__source[self.__start:self.__current]
         self.__tokens.append(Token(type, lexeme, literal, self.__line))
 
