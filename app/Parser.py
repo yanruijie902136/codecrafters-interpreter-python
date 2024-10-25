@@ -47,6 +47,8 @@ class Parser:
         return VarStmt(name, initializer)
 
     def __statement(self):
+        if self.__match(TokenType.LEFT_BRACE):
+            return self.__blockStatement()
         if self.__match(TokenType.FOR):
             return self.__forStatement()
         if self.__match(TokenType.IF):
@@ -55,16 +57,14 @@ class Parser:
             return self.__printStatement()
         if self.__match(TokenType.WHILE):
             return self.__whileStatement()
-        if self.__match(TokenType.LEFT_BRACE):
-            return BlockStmt(self.__block())
         return self.__expressionStatement()
 
-    def __block(self):
+    def __blockStatement(self):
         statements: list[Stmt] = []
         while not self.__check(TokenType.RIGHT_BRACE) and not self.__isAtEnd():
             statements.append(self.__declaration())
         self.__consume(TokenType.RIGHT_BRACE, "Expect '}' after block.")
-        return statements
+        return BlockStmt(statements)
 
     def __expressionStatement(self):
         expression = self.__expression()

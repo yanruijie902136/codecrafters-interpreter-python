@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import argparse
 import sys
 from typing import Union
 
@@ -13,7 +14,14 @@ from app.Stmt import Stmt
 from app.Token import Token
 
 
-def scan(fileContents: str, printTokens: bool = False):
+def parseArgs():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("command", type=str)
+    parser.add_argument("fileName", type=str)
+    return parser.parse_args()
+
+
+def scan(fileContents: str, printTokens=False):
     tokens, errors = Scanner(fileContents).scanTokens()
     if printTokens:
         for token in tokens:
@@ -25,7 +33,7 @@ def scan(fileContents: str, printTokens: bool = False):
     return tokens
 
 
-def parse(tokens: list[Token], isStmt: bool = False):
+def parse(tokens: list[Token], isStmt=False):
     try:
         parser = Parser(tokens)
         return parser.parseStmt() if isStmt else parser.parseExpr()
@@ -46,15 +54,12 @@ def interpret(exprOrStmts: Union[Expr, list[Stmt]]):
 
 
 def main():
-    if len(sys.argv) < 3:
-        print("Usage: ./your_program.sh <command> <filename>", file=sys.stderr)
-        sys.exit(1)
+    args = parseArgs()
 
-    fileName = sys.argv[2]
-    with open(fileName) as file:
+    with open(args.fileName) as file:
         fileContents = file.read()
 
-    match command := sys.argv[1]:
+    match args.command:
         case "tokenize":
             scan(fileContents, printTokens=True)
         case "parse":
@@ -64,7 +69,7 @@ def main():
         case "run":
             interpret(parse(scan(fileContents), isStmt=True))
         case _:
-            print(f"Unknown command: {command}", file=sys.stderr)
+            print(f"Unknown command: {args.command}", file=sys.stderr)
             sys.exit(1)
 
 
