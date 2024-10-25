@@ -47,6 +47,8 @@ class Parser:
         return VarStmt(name, initializer)
 
     def __statement(self):
+        if self.__match(TokenType.FOR):
+            return self.__forStatement()
         if self.__match(TokenType.IF):
             return self.__ifStatement()
         if self.__match(TokenType.PRINT):
@@ -68,6 +70,30 @@ class Parser:
         expression = self.__expression()
         self.__consume(TokenType.SEMICOLON, "Expect ';' after expression.")
         return ExpressionStmt(expression)
+
+    def __forStatement(self):
+        self.__consume(TokenType.LEFT_PAREN, "Expect '(' after 'for'.")
+
+        if self.__match(TokenType.SEMICOLON):
+            initializer = None
+        elif self.__match(TokenType.VAR):
+            initializer = self.__varDeclaration()
+        else:
+            initializer = self.__expressionStatement()
+
+        condition = LiteralExpr(True) if self.__check(TokenType.SEMICOLON) else self.__expression()
+        self.__consume(TokenType.SEMICOLON, "Expect ';' after loop condition.")
+
+        increment = None if self.__check(TokenType.RIGHT_PAREN) else self.__expression()
+        self.__consume(TokenType.RIGHT_PAREN, "Expect ')' after for clauses.")
+
+        body = self.__statement()
+        if increment is not None:
+            body = BlockStmt([body, ExpressionStmt(increment)])
+        body = WhileStmt(condition, body)
+        if initializer is not None:
+            body = BlockStmt([initializer, body])
+        return body
 
     def __ifStatement(self):
         self.__consume(TokenType.LEFT_PAREN, "Expect '(' after 'if'.")
