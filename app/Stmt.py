@@ -24,6 +24,10 @@ class StmtVisitor(ABC):
         raise NotImplementedError
 
     @abstractmethod
+    def visitIfStmt(self, stmt: IfStmt):
+        raise NotImplementedError
+
+    @abstractmethod
     def visitPrintStmt(self, stmt: PrintStmt):
         raise NotImplementedError
 
@@ -46,6 +50,16 @@ class ExpressionStmt(Stmt):
 
     def accept(self, visitor: StmtVisitor):
         return visitor.visitExpressionStmt(self)
+
+
+class IfStmt(Stmt):
+    def __init__(self, condition: Expr, thenBranch: Stmt, elseBranch: Optional[Stmt]):
+        self.condition = condition
+        self.thenBranch = thenBranch
+        self.elseBranch = elseBranch
+
+    def accept(self, visitor: StmtVisitor):
+        return visitor.visitIfStmt(self)
 
 
 class PrintStmt(Stmt):

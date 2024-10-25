@@ -16,6 +16,7 @@ from app.Stmt import (
     Stmt,
     StmtVisitor,
     ExpressionStmt,
+    IfStmt,
     PrintStmt,
     VarStmt,
 )
@@ -109,6 +110,12 @@ class Interpreter(ExprVisitor, StmtVisitor):
 
     def visitExpressionStmt(self, stmt: ExpressionStmt):
         self.__evaluate(stmt.expression)
+
+    def visitIfStmt(self, stmt: IfStmt):
+        if self.__isTruthy(self.__evaluate(stmt.condition)):
+            self.__execute(stmt.thenBranch)
+        elif stmt.elseBranch is not None:
+            self.__execute(stmt.elseBranch)
 
     def visitPrintStmt(self, stmt: PrintStmt):
         print(self.__stringify(self.__evaluate(stmt.expression)))

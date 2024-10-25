@@ -8,7 +8,7 @@ from app.Expr import (
     UnaryExpr,
     VariableExpr,
 )
-from app.Stmt import Stmt, BlockStmt, ExpressionStmt, PrintStmt, VarStmt
+from app.Stmt import Stmt, BlockStmt, ExpressionStmt, IfStmt, PrintStmt, VarStmt
 from app.Token import Token, TokenType
 
 
@@ -38,6 +38,8 @@ class Parser:
         return VarStmt(name, initializer)
 
     def __statement(self):
+        if self.__match(TokenType.IF):
+            return self.__ifStatement()
         if self.__match(TokenType.PRINT):
             return self.__printStatement()
         if self.__match(TokenType.LEFT_BRACE):
@@ -55,6 +57,14 @@ class Parser:
         expression = self.__expression()
         self.__consume(TokenType.SEMICOLON, "Expect ';' after expression.")
         return ExpressionStmt(expression)
+
+    def __ifStatement(self):
+        self.__consume(TokenType.LEFT_PAREN, "Expect '(' after 'if'.")
+        condition = self.__expression()
+        self.__consume(TokenType.RIGHT_PAREN, "Expect ')' after if condition.")
+        thenBranch = self.__statement()
+        elseBranch = self.__statement() if self.__match(TokenType.ELSE) else None
+        return IfStmt(condition, thenBranch, elseBranch)
 
     def __printStatement(self):
         expression = self.__expression()
