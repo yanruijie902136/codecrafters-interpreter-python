@@ -16,7 +16,7 @@ from app.Token import Token
 
 def parseArgs():
     parser = argparse.ArgumentParser()
-    parser.add_argument("command", type=str)
+    parser.add_argument("command", choices=["tokenize", "parse", "evaluate", "run"])
     parser.add_argument("fileName", type=str)
     return parser.parse_args()
 
@@ -68,9 +68,6 @@ def main():
             print(interpret(parse(scan(fileContents))))
         case "run":
             interpret(parse(scan(fileContents), isStmt=True))
-        case _:
-            print(f"Unknown command: {args.command}", file=sys.stderr)
-            sys.exit(1)
 
 
 if __name__ == "__main__":
