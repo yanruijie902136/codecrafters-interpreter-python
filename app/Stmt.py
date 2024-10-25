@@ -35,6 +35,10 @@ class StmtVisitor(ABC):
     def visitVarStmt(self, stmt: VarStmt):
         raise NotImplementedError
 
+    @abstractmethod
+    def visitWhileStmt(self, stmt: WhileStmt):
+        raise NotImplementedError
+
 
 class BlockStmt(Stmt):
     def __init__(self, statements: list[Stmt]):
@@ -77,3 +81,12 @@ class VarStmt(Stmt):
 
     def accept(self, visitor: StmtVisitor):
         return visitor.visitVarStmt(self)
+
+
+class WhileStmt(Stmt):
+    def __init__(self, condition: Expr, body: Stmt):
+        self.condition = condition
+        self.body = body
+
+    def accept(self, visitor: StmtVisitor):
+        return visitor.visitWhileStmt(self)

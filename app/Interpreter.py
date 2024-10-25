@@ -14,12 +14,13 @@ from app.Expr import (
 )
 from app.Stmt import (
     BlockStmt,
-    Stmt,
-    StmtVisitor,
     ExpressionStmt,
     IfStmt,
     PrintStmt,
+    Stmt,
+    StmtVisitor,
     VarStmt,
+    WhileStmt,
 )
 from app.Token import TokenType
 
@@ -134,6 +135,10 @@ class Interpreter(ExprVisitor, StmtVisitor):
     def visitVarStmt(self, stmt: VarStmt):
         value = None if stmt.initializer is None else self.__evaluate(stmt.initializer)
         self.__environment.define(stmt.name.lexeme, value)
+
+    def visitWhileStmt(self, stmt: WhileStmt):
+        while self.__isTruthy(self.__evaluate(stmt.condition)):
+            self.__execute(stmt.body)
 
     ###################
     # Private methods #

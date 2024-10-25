@@ -9,7 +9,15 @@ from app.Expr import (
     UnaryExpr,
     VariableExpr,
 )
-from app.Stmt import Stmt, BlockStmt, ExpressionStmt, IfStmt, PrintStmt, VarStmt
+from app.Stmt import (
+    BlockStmt,
+    ExpressionStmt,
+    IfStmt,
+    PrintStmt,
+    Stmt,
+    VarStmt,
+    WhileStmt,
+)
 from app.Token import Token, TokenType
 
 
@@ -43,6 +51,8 @@ class Parser:
             return self.__ifStatement()
         if self.__match(TokenType.PRINT):
             return self.__printStatement()
+        if self.__match(TokenType.WHILE):
+            return self.__whileStatement()
         if self.__match(TokenType.LEFT_BRACE):
             return BlockStmt(self.__block())
         return self.__expressionStatement()
@@ -71,6 +81,12 @@ class Parser:
         expression = self.__expression()
         self.__consume(TokenType.SEMICOLON, "Expect ';' after expression.")
         return PrintStmt(expression)
+
+    def __whileStatement(self):
+        self.__consume(TokenType.LEFT_PAREN, "Expect '(' after 'while'.")
+        condition = self.__expression()
+        self.__consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.")
+        return WhileStmt(condition, self.__statement())
 
     def __expression(self):
         return self.__assignment()
