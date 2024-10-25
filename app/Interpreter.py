@@ -8,6 +8,7 @@ from app.Expr import (
     ExprVisitor,
     GroupingExpr,
     LiteralExpr,
+    LogicalExpr,
     UnaryExpr,
     VariableExpr,
 )
@@ -82,6 +83,16 @@ class Interpreter(ExprVisitor, StmtVisitor):
 
     def visitLiteralExpr(self, expr: LiteralExpr):
         return expr.value
+
+    def visitLogicalExpr(self, expr: LogicalExpr):
+        left = self.__evaluate(expr.left)
+        if expr.operator.type is TokenType.OR:
+            if self.__isTruthy(left):
+                return left
+        else:
+            if not self.__isTruthy(left):
+                return left
+        return self.__evaluate(expr.right)
 
     def visitUnaryExpr(self, expr: UnaryExpr):
         right = self.__evaluate(expr.right)

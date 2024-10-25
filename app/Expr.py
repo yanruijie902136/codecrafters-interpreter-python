@@ -30,6 +30,10 @@ class ExprVisitor(ABC):
         raise NotImplementedError
 
     @abstractmethod
+    def visitLogicalExpr(self, expr: LogicalExpr):
+        raise NotImplementedError
+
+    @abstractmethod
     def visitUnaryExpr(self, expr: UnaryExpr):
         raise NotImplementedError
 
@@ -71,6 +75,16 @@ class LiteralExpr(Expr):
 
     def accept(self, visitor: ExprVisitor):
         return visitor.visitLiteralExpr(self)
+
+
+class LogicalExpr(Expr):
+    def __init__(self, left: Expr, operator: Token, right: Expr):
+        self.left = left
+        self.operator = operator
+        self.right = right
+
+    def accept(self, visitor: ExprVisitor):
+        return visitor.visitLogicalExpr(self)
 
 
 class UnaryExpr(Expr):

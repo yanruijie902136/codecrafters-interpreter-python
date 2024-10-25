@@ -5,6 +5,7 @@ from app.Expr import (
     BinaryExpr,
     GroupingExpr,
     LiteralExpr,
+    LogicalExpr,
     UnaryExpr,
     VariableExpr,
 )
@@ -75,13 +76,25 @@ class Parser:
         return self.__assignment()
 
     def __assignment(self):
-        expr = self.__equality()
+        expr = self.__or()
         if self.__match(TokenType.EQUAL):
             _ = self.__previous()
             value = self.__assignment()
             if isinstance(expr, VariableExpr):
                 return AssignExpr(expr.name, value)
             raise RuntimeError("Invalid assignment target.")
+        return expr
+
+    def __or(self):
+        expr = self.__and()
+        while self.__match(TokenType.OR):
+            expr = LogicalExpr(expr, self.__previous(), self.__and())
+        return expr
+
+    def __and(self):
+        expr = self.__equality()
+        while self.__match(TokenType.AND):
+            expr = LogicalExpr(expr, self.__previous(), self.__equality())
         return expr
 
     def __equality(self):

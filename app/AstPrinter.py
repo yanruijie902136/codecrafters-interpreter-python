@@ -7,6 +7,7 @@ from app.Expr import (
     ExprVisitor,
     GroupingExpr,
     LiteralExpr,
+    LogicalExpr,
     UnaryExpr,
     VariableExpr,
 )
@@ -32,6 +33,9 @@ class AstPrinter(ExprVisitor):
             # In Python Booleans are capitalized. In Lox they aren't.
             return str(expr.value).lower()
         return str(expr.value)
+
+    def visitLogicalExpr(self, expr: LogicalExpr):
+        return f"({expr.operator.lexeme} {expr.left.accept(self)} {expr.right.accept(self)})"
 
     def visitUnaryExpr(self, expr: UnaryExpr):
         return f"({expr.operator.lexeme} {expr.right.accept(self)})"
