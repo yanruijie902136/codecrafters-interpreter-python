@@ -11,11 +11,14 @@ from app.Expr import (
     UnaryExpr,
     VariableExpr,
 )
+from app.Return import Return
 from app.Stmt import (
     BlockStmt,
     ExpressionStmt,
+    FunctionStmt,
     IfStmt,
     PrintStmt,
+    ReturnStmt,
     Stmt,
     StmtVisitor,
     VarStmt,
@@ -31,6 +34,10 @@ class Interpreter(ExprVisitor, StmtVisitor):
 
         from app.LoxCallable import NativeClockFunction
         self.__globals.define("clock", NativeClockFunction())
+
+    @property
+    def globals(self):
+        return self.__globals
 
     def interpretExpr(self, expr: Expr):
         return self.__stringify(self.__evaluate(expr))
@@ -119,17 +126,25 @@ class Interpreter(ExprVisitor, StmtVisitor):
     # StmtVisitor #
     ###############
 
-    def visitBlockStmt(self, stmt: BlockStmt):
+    def executeBlock(self, statements: list[Stmt], environment: Environment):
         previous = self.__environment
         try:
-            self.__environment = Environment(self.__environment)
-            for subStmt in stmt.statements:
-                self.__execute(subStmt)
+            self.__environment = environment
+            for statement in statements:
+                self.__execute(statement)
         finally:
             self.__environment = previous
 
+    def visitBlockStmt(self, stmt: BlockStmt):
+        self.executeBlock(stmt.statements, Environment(self.__environment))
+
     def visitExpressionStmt(self, stmt: ExpressionStmt):
         self.__evaluate(stmt.expression)
+
+    def visitFunctionStmt(self, stmt: FunctionStmt):
+        from app.LoxCallable import LoxFunction
+        function = LoxFunction(stmt)
+        self.__environment.define(stmt.name.lexeme, function)
 
     def visitIfStmt(self, stmt: IfStmt):
         if self.__isTruthy(self.__evaluate(stmt.condition)):
@@ -139,6 +154,10 @@ class Interpreter(ExprVisitor, StmtVisitor):
 
     def visitPrintStmt(self, stmt: PrintStmt):
         print(self.__stringify(self.__evaluate(stmt.expression)))
+
+    def visitReturnStmt(self, stmt: ReturnStmt):
+        value = self.__evaluate(stmt.value) if stmt.value is not None else None
+        raise Return(value)
 
     def visitVarStmt(self, stmt: VarStmt):
         value = None if stmt.initializer is None else self.__evaluate(stmt.initializer)

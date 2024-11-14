@@ -21,11 +21,19 @@ class StmtVisitor(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
+    def visitFunctionStmt(self, stmt: FunctionStmt):
+        raise NotImplementedError
+
+    @abc.abstractmethod
     def visitIfStmt(self, stmt: IfStmt):
         raise NotImplementedError
 
     @abc.abstractmethod
     def visitPrintStmt(self, stmt: PrintStmt):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def visitReturnStmt(self, stmt: ReturnStmt):
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -53,6 +61,16 @@ class ExpressionStmt(Stmt):
         return visitor.visitExpressionStmt(self)
 
 
+class FunctionStmt(Stmt):
+    def __init__(self, name: Token, parameters: list[Token], body: list[Stmt]):
+        self.name = name
+        self.parameters = parameters
+        self.body = body
+
+    def accept(self, visitor: StmtVisitor):
+        return visitor.visitFunctionStmt(self)
+
+
 class IfStmt(Stmt):
     def __init__(self, condition: Expr, thenBranch: Stmt, elseBranch: Stmt | None):
         self.condition = condition
@@ -69,6 +87,15 @@ class PrintStmt(Stmt):
 
     def accept(self, visitor: StmtVisitor):
         return visitor.visitPrintStmt(self)
+
+
+class ReturnStmt(Stmt):
+    def __init__(self, keyword: Token, value: Expr | None):
+        self.keyword = keyword
+        self.value = value
+
+    def accept(self, visitor: StmtVisitor):
+        return visitor.visitReturnStmt(self)
 
 
 class VarStmt(Stmt):

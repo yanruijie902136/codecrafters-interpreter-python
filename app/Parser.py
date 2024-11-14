@@ -12,8 +12,10 @@ from app.Expr import (
 from app.Stmt import (
     BlockStmt,
     ExpressionStmt,
+    FunctionStmt,
     IfStmt,
     PrintStmt,
+    ReturnStmt,
     Stmt,
     VarStmt,
     WhileStmt,
@@ -36,9 +38,27 @@ class Parser:
         return statements
 
     def __declaration(self):
+        if self.__match(TokenType.FUN):
+            return self.__function("function")
         if self.__match(TokenType.VAR):
             return self.__varDeclaration()
         return self.__statement()
+
+    def __function(self, kind: str):
+        name = self.__consume(TokenType.IDENTIFIER, f"Expect {kind} name.")
+        self.__consume(TokenType.LEFT_PAREN, f"Expect '(' after {kind} name.")
+
+        parameters = []
+        if not self.__check(TokenType.RIGHT_PAREN):
+            while True:
+                parameters.append(self.__consume(TokenType.IDENTIFIER, "Expect parameter name."))
+                if not self.__match(TokenType.COMMA):
+                    break
+        self.__consume(TokenType.RIGHT_PAREN, "Expect ')' after parameters.")
+
+        self.__consume(TokenType.LEFT_BRACE, f"Expect '{{' before {kind} body.")
+        body = self.__block()
+        return FunctionStmt(name, parameters, body)
 
     def __varDeclaration(self):
         name = self.__consume(TokenType.IDENTIFIER, "Expect variable name.")
@@ -48,23 +68,25 @@ class Parser:
 
     def __statement(self):
         if self.__match(TokenType.LEFT_BRACE):
-            return self.__blockStatement()
+            return BlockStmt(self.__block())
         if self.__match(TokenType.FOR):
             return self.__forStatement()
         if self.__match(TokenType.IF):
             return self.__ifStatement()
         if self.__match(TokenType.PRINT):
             return self.__printStatement()
+        if self.__match(TokenType.RETURN):
+            return self.__returnStatement()
         if self.__match(TokenType.WHILE):
             return self.__whileStatement()
         return self.__expressionStatement()
 
-    def __blockStatement(self):
+    def __block(self):
         statements: list[Stmt] = []
         while not self.__check(TokenType.RIGHT_BRACE) and not self.__isAtEnd():
             statements.append(self.__declaration())
         self.__consume(TokenType.RIGHT_BRACE, "Expect '}' after block.")
-        return BlockStmt(statements)
+        return statements
 
     def __expressionStatement(self):
         expression = self.__expression()
@@ -107,6 +129,12 @@ class Parser:
         expression = self.__expression()
         self.__consume(TokenType.SEMICOLON, "Expect ';' after expression.")
         return PrintStmt(expression)
+
+    def __returnStatement(self):
+        keyword = self.__previous()
+        value = self.__expression() if not self.__check(TokenType.SEMICOLON) else None
+        self.__consume(TokenType.SEMICOLON, "Expect ';' after return value.")
+        return ReturnStmt(keyword, value)
 
     def __whileStatement(self):
         self.__consume(TokenType.LEFT_PAREN, "Expect '(' after 'while'.")
