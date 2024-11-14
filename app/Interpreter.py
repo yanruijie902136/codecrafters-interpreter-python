@@ -88,6 +88,14 @@ class Interpreter(ExprVisitor, StmtVisitor):
     def visitCallExpr(self, expr: CallExpr):
         callee = self.__evaluate(expr.callee)
         arguments = [self.__evaluate(argument) for argument in expr.arguments]
+
+        from app.LoxCallable import LoxCallable
+        if not isinstance(callee, LoxCallable):
+            raise RuntimeError("Can only call functions and classes.")
+
+        if len(arguments) != callee.arity:
+            raise RuntimeError(f"Expected {callee.arity} arguments but got {len(arguments)}.")
+
         return callee.call(self, arguments)
 
     def visitGroupingExpr(self, expr: GroupingExpr):
