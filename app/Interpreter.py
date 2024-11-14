@@ -35,10 +35,6 @@ class Interpreter(ExprVisitor, StmtVisitor):
         from app.LoxCallable import NativeClockFunction
         self.__globals.define("clock", NativeClockFunction())
 
-    @property
-    def globals(self):
-        return self.__globals
-
     def interpretExpr(self, expr: Expr):
         return self.__stringify(self.__evaluate(expr))
 
@@ -143,7 +139,7 @@ class Interpreter(ExprVisitor, StmtVisitor):
 
     def visitFunctionStmt(self, stmt: FunctionStmt):
         from app.LoxCallable import LoxFunction
-        function = LoxFunction(stmt)
+        function = LoxFunction(stmt, self.__environment)
         self.__environment.define(stmt.name.lexeme, function)
 
     def visitIfStmt(self, stmt: IfStmt):

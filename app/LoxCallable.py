@@ -32,11 +32,12 @@ class NativeClockFunction(LoxCallable):
 
 
 class LoxFunction(LoxCallable):
-    def __init__(self, declaration: FunctionStmt):
+    def __init__(self, declaration: FunctionStmt, closure: Environment):
         self.__declaration = declaration
+        self.__closure = closure
 
     def call(self, interpreter: Interpreter, arguments: list[typing.Any]):
-        environment = Environment(interpreter.globals)
+        environment = Environment(self.__closure)
         for parameter, argument in zip(self.__declaration.parameters, arguments):
             environment.define(parameter.lexeme, argument)
 
