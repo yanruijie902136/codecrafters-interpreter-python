@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
-
 from app.Expr import (
     AssignExpr,
     BinaryExpr,
+    CallExpr,
     Expr,
     ExprVisitor,
     GroupingExpr,
@@ -22,6 +21,9 @@ class AstPrinter(ExprVisitor):
 
     def visitBinaryExpr(self, expr: BinaryExpr):
         return f"({expr.operator.lexeme} {expr.left.accept(self)} {expr.right.accept(self)})"
+
+    def visitCallExpr(self, expr: CallExpr):
+        return f"(call {expr.callee.accept(self)} {[argument.accept(self) for argument in expr.arguments]})"
 
     def visitGroupingExpr(self, expr: GroupingExpr):
         return f"(group {expr.expression.accept(self)})"

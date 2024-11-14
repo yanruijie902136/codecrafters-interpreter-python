@@ -1,13 +1,10 @@
-# -*- coding: utf-8 -*-
-
 from __future__ import annotations
-from typing import Optional
 
 from app.Token import Token
 
 
 class Environment:
-    def __init__(self, enclosing: Optional[Environment] = None):
+    def __init__(self, enclosing: Environment | None = None):
         self.__enclosing = enclosing
         self.__values: dict[str] = {}
 

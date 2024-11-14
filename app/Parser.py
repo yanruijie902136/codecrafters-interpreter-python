@@ -1,8 +1,8 @@
-# -*- coding: utf-8 -*-
-
 from app.Expr import (
     AssignExpr,
     BinaryExpr,
+    CallExpr,
+    Expr,
     GroupingExpr,
     LiteralExpr,
     LogicalExpr,
@@ -166,7 +166,26 @@ class Parser:
     def __unary(self):
         if self.__match(TokenType.MINUS, TokenType.BANG):
             return UnaryExpr(self.__previous(), self.__unary())
-        return self.__primary()
+        return self.__call()
+
+    def __call(self):
+        expr = self.__primary()
+        while True:
+            if self.__match(TokenType.LEFT_PAREN):
+                expr = self.__finishCall(expr)
+            else:
+                break
+        return expr
+
+    def __finishCall(self, callee: Expr):
+        arguments = []
+        if not self.__check(TokenType.RIGHT_PAREN):
+            while True:
+                arguments.append(self.__expression())
+                if not self.__match(TokenType.COMMA):
+                    break
+        self.__consume(TokenType.RIGHT_PAREN, "Expect ')' after arguments.")
+        return CallExpr(callee, arguments)
 
     def __primary(self):
         if self.__match(TokenType.NIL):
@@ -201,7 +220,7 @@ class Parser:
         raise RuntimeError(message)
 
     def __check(self, type: TokenType):
-        return False if self.__isAtEnd() else self.__peek().type is type
+        return False if self.__isAtEnd() else self.__peek().token_type is type
 
     def __advance(self):
         if not self.__isAtEnd():
@@ -209,7 +228,7 @@ class Parser:
         return self.__previous()
 
     def __isAtEnd(self):
-        return self.__peek().type is TokenType.EOF
+        return self.__peek().token_type is TokenType.EOF
 
     def __peek(self):
         return self.__tokens[self.__current]

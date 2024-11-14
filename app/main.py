@@ -1,9 +1,5 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 import argparse
 import sys
-from typing import Union
 
 from app.AstPrinter import AstPrinter
 from app.Expr import Expr
@@ -42,7 +38,7 @@ def parse(tokens: list[Token], isStmt=False):
         sys.exit(65)
 
 
-def interpret(exprOrStmts: Union[Expr, list[Stmt]]):
+def interpret(exprOrStmts: Expr | list[Stmt]):
     try:
         interpreter = Interpreter()
         if isinstance(exprOrStmts, Expr):

@@ -1,43 +1,45 @@
-# -*- coding: utf-8 -*-
-
 from __future__ import annotations
-from abc import ABC, abstractmethod
+import abc
 
 from app.Token import Token
 
 
-class Expr(ABC):
-    @abstractmethod
+class Expr(abc.ABC):
+    @abc.abstractmethod
     def accept(self, visitor: ExprVisitor):
         raise NotImplementedError
 
 
-class ExprVisitor(ABC):
-    @abstractmethod
+class ExprVisitor(abc.ABC):
+    @abc.abstractmethod
     def visitAssignExpr(self, expr: AssignExpr):
         raise NotImplementedError
 
-    @abstractmethod
+    @abc.abstractmethod
     def visitBinaryExpr(self, expr: BinaryExpr):
         raise NotImplementedError
 
-    @abstractmethod
+    @abc.abstractmethod
+    def visitCallExpr(self, expr: CallExpr):
+        raise NotImplementedError
+
+    @abc.abstractmethod
     def visitGroupingExpr(self, expr: GroupingExpr):
         raise NotImplementedError
 
-    @abstractmethod
+    @abc.abstractmethod
     def visitLiteralExpr(self, expr: LiteralExpr):
         raise NotImplementedError
 
-    @abstractmethod
+    @abc.abstractmethod
     def visitLogicalExpr(self, expr: LogicalExpr):
         raise NotImplementedError
 
-    @abstractmethod
+    @abc.abstractmethod
     def visitUnaryExpr(self, expr: UnaryExpr):
         raise NotImplementedError
 
-    @abstractmethod
+    @abc.abstractmethod
     def visitVariableExpr(self, expr: VariableExpr):
         raise NotImplementedError
 
@@ -59,6 +61,15 @@ class BinaryExpr(Expr):
 
     def accept(self, visitor: ExprVisitor):
         return visitor.visitBinaryExpr(self)
+
+
+class CallExpr(Expr):
+    def __init__(self, callee: Expr, arguments: list[Expr]):
+        self.callee = callee
+        self.arguments = arguments
+
+    def accept(self, visitor: ExprVisitor):
+        return visitor.visitCallExpr(self)
 
 
 class GroupingExpr(Expr):

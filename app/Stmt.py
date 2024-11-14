@@ -1,41 +1,38 @@
-# -*- coding: utf-8 -*-
-
 from __future__ import annotations
-from abc import ABC, abstractmethod
-from typing import Optional
+import abc
 
 from app.Expr import Expr
 from app.Token import Token
 
 
-class Stmt(ABC):
-    @abstractmethod
+class Stmt(abc.ABC):
+    @abc.abstractmethod
     def accept(self, visitor: StmtVisitor):
         raise NotImplementedError
 
 
-class StmtVisitor(ABC):
-    @abstractmethod
+class StmtVisitor(abc.ABC):
+    @abc.abstractmethod
     def visitBlockStmt(self, stmt: BlockStmt):
         raise NotImplementedError
 
-    @abstractmethod
+    @abc.abstractmethod
     def visitExpressionStmt(self, stmt: ExpressionStmt):
         raise NotImplementedError
 
-    @abstractmethod
+    @abc.abstractmethod
     def visitIfStmt(self, stmt: IfStmt):
         raise NotImplementedError
 
-    @abstractmethod
+    @abc.abstractmethod
     def visitPrintStmt(self, stmt: PrintStmt):
         raise NotImplementedError
 
-    @abstractmethod
+    @abc.abstractmethod
     def visitVarStmt(self, stmt: VarStmt):
         raise NotImplementedError
 
-    @abstractmethod
+    @abc.abstractmethod
     def visitWhileStmt(self, stmt: WhileStmt):
         raise NotImplementedError
 
@@ -57,7 +54,7 @@ class ExpressionStmt(Stmt):
 
 
 class IfStmt(Stmt):
-    def __init__(self, condition: Expr, thenBranch: Stmt, elseBranch: Optional[Stmt]):
+    def __init__(self, condition: Expr, thenBranch: Stmt, elseBranch: Stmt | None):
         self.condition = condition
         self.thenBranch = thenBranch
         self.elseBranch = elseBranch
@@ -75,7 +72,7 @@ class PrintStmt(Stmt):
 
 
 class VarStmt(Stmt):
-    def __init__(self, name: Token, initializer: Optional[Expr]):
+    def __init__(self, name: Token, initializer: Expr | None):
         self.name = name
         self.initializer = initializer
 

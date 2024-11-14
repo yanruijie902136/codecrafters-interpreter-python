@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
-
-from collections import namedtuple
+import collections
 
 from app.Token import Token, TokenType
 
@@ -11,7 +9,7 @@ KEYWORDS = [
 ]
 
 
-LexicalError = namedtuple("LexicalError", ("line", "message"))
+LexicalError = collections.namedtuple("LexicalError", ("line", "message"))
 
 
 class Scanner:

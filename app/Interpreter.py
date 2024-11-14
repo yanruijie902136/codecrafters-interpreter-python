@@ -1,9 +1,8 @@
-# -*- coding: utf-8 -*-
-
 from app.Environment import Environment
 from app.Expr import (
     AssignExpr,
     BinaryExpr,
+    CallExpr,
     Expr,
     ExprVisitor,
     GroupingExpr,
@@ -27,7 +26,11 @@ from app.Token import TokenType
 
 class Interpreter(ExprVisitor, StmtVisitor):
     def __init__(self):
-        self.__environment = Environment()
+        self.__globals = Environment()
+        self.__environment = self.__globals
+
+        from app.LoxCallable import NativeClockFunction
+        self.__globals.define("clock", NativeClockFunction())
 
     def interpretExpr(self, expr: Expr):
         return self.__stringify(self.__evaluate(expr))
@@ -47,7 +50,7 @@ class Interpreter(ExprVisitor, StmtVisitor):
 
     def visitBinaryExpr(self, expr: BinaryExpr):
         left, right = self.__evaluate(expr.left), self.__evaluate(expr.right)
-        match expr.operator.type:
+        match expr.operator.token_type:
             case TokenType.STAR:
                 self.__checkNumberOperands(left, right)
                 return left * right
@@ -79,6 +82,11 @@ class Interpreter(ExprVisitor, StmtVisitor):
             case TokenType.EQUAL_EQUAL:
                 return left == right
 
+    def visitCallExpr(self, expr: CallExpr):
+        callee = self.__evaluate(expr.callee)
+        arguments = [self.__evaluate(argument) for argument in expr.arguments]
+        return callee.call(self, arguments)
+
     def visitGroupingExpr(self, expr: GroupingExpr):
         return self.__evaluate(expr.expression)
 
@@ -87,7 +95,7 @@ class Interpreter(ExprVisitor, StmtVisitor):
 
     def visitLogicalExpr(self, expr: LogicalExpr):
         left = self.__evaluate(expr.left)
-        if expr.operator.type is TokenType.OR:
+        if expr.operator.token_type is TokenType.OR:
             if self.__isTruthy(left):
                 return left
         else:
@@ -97,7 +105,7 @@ class Interpreter(ExprVisitor, StmtVisitor):
 
     def visitUnaryExpr(self, expr: UnaryExpr):
         right = self.__evaluate(expr.right)
-        match expr.operator.type:
+        match expr.operator.token_type:
             case TokenType.MINUS:
                 self.__checkNumberOperand(right)
                 return -right
