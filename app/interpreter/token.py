@@ -33,6 +33,7 @@ TokenType = enum.Enum(
 class Token:
     token_type: TokenType
     lexeme: str
+    line: int
 
     def __str__(self) -> str:
         return "{} {} null".format(self.token_type.name, self.lexeme)

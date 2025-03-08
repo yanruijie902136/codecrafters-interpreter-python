@@ -10,6 +10,7 @@ class Scanner:
         self._current = 0
         self._tokens = []
         self._has_error = False
+        self._line = 1
 
     def scan_tokens(self) -> list[Token]:
         while not self._is_at_end():
@@ -60,6 +61,8 @@ class Scanner:
                     self._comment()
                 else:
                     self._add_token(TokenType.SLASH)
+            case "\n":
+                self._line += 1
             case _:
                 if c.isspace():
                     return
@@ -71,14 +74,14 @@ class Scanner:
         return c
 
     def _add_token(self, token_type: TokenType) -> None:
-        token = Token(token_type, self._get_lexeme())
+        token = Token(token_type, self._get_lexeme(), self._line)
         self._tokens.append(token)
 
     def _get_lexeme(self) -> str:
         return self._source[self._start:self._current]
 
     def _error(self, error_message: str) -> None:
-        print("[line 1] Error:", error_message, file=sys.stderr)
+        print(f"[line {self._line}] Error: {error_message}", file=sys.stderr)
         self._has_error = True
 
     def _match(self, expected: str) -> bool:
