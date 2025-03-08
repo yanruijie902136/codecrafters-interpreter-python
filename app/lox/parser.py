@@ -1,4 +1,4 @@
-from .expr import Expr, GroupingExpr, LiteralExpr
+from .expr import *
 from .token import Token, TokenType
 
 
@@ -11,6 +11,11 @@ class Parser:
         return self._expression()
 
     def _expression(self) -> Expr:
+        return self._unary()
+
+    def _unary(self) -> Expr:
+        if self._match(TokenType.BANG, TokenType.MINUS):
+            return UnaryExpr(operator=self._previous(), right=self._unary())
         return self._primary()
 
     def _primary(self) -> Expr:

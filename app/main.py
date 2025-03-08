@@ -1,7 +1,7 @@
 import argparse
 import sys
 
-from interpreter import AstPrinter, Parser, Scanner, Token
+import lox
 
 
 def parse_args() -> argparse.Namespace:
@@ -11,8 +11,8 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def tokenize(source: str, print_tokens: bool = False) -> list[Token]:
-    scanner = Scanner(source)
+def tokenize(source: str, print_tokens: bool = False) -> list[lox.Token]:
+    scanner = lox.Scanner(source)
     tokens = scanner.scan_tokens()
     if print_tokens:
         for token in tokens:
@@ -22,10 +22,9 @@ def tokenize(source: str, print_tokens: bool = False) -> list[Token]:
     return tokens
 
 
-def parse(tokens: list[Token]) -> None:
-    parser = Parser(tokens)
-    ast_printer = AstPrinter()
-    print(ast_printer.print(parser.parse()))
+def parse(tokens: list[lox.Token]) -> None:
+    parser = lox.Parser(tokens)
+    lox.AstPrinter().print(parser.parse())
 
 
 def main() -> None:
