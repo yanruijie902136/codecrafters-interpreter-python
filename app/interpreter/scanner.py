@@ -68,14 +68,17 @@ class Scanner:
             case _:
                 if c.isspace():
                     return
-                self._error(f"Unexpected character: {c}")
+                elif c.isdigit():
+                    self._number()
+                else:
+                    self._error(f"Unexpected character: {c}")
 
     def _advance(self) -> str:
         c = self._source[self._current]
         self._current += 1
         return c
 
-    def _add_token(self, token_type: TokenType, literal: str | None = None) -> None:
+    def _add_token(self, token_type: TokenType, literal: str | float | None = None) -> None:
         token = Token(token_type, self._get_lexeme(), literal, self._line)
         self._tokens.append(token)
 
@@ -110,3 +113,17 @@ class Scanner:
         self._advance()
 
         self._add_token(TokenType.STRING, self._get_lexeme()[1:-1])
+
+    def _number(self) -> None:
+        while self._peek().isdigit():
+            self._advance()
+
+        if self._peek() == "." and self._peek_next().isdigit():
+            self._advance()
+            while self._peek().isdigit():
+                self._advance()
+
+        self._add_token(TokenType.NUMBER, float(self._get_lexeme()))
+
+    def _peek_next(self) -> str:
+        return "" if self._current + 1 >= len(self._source) else self._source[self._current + 1]

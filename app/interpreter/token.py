@@ -19,6 +19,7 @@ TokenType = enum.Enum(
         "LESS",
         "LESS_EQUAL",
         "MINUS",
+        "NUMBER",
         "PLUS",
         "RIGHT_BRACE",
         "RIGHT_PAREN",
@@ -34,7 +35,7 @@ TokenType = enum.Enum(
 class Token:
     token_type: TokenType
     lexeme: str
-    literal: str | None
+    literal: str | float | None
     line: int
 
     def __str__(self) -> str:
