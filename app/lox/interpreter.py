@@ -45,9 +45,13 @@ class Interpreter:
             case TokenType.LESS_EQUAL:
                 return left <= right
             case TokenType.MINUS:
+                self._check_number_operands(expr.operator, left, right)
                 return left - right
             case TokenType.PLUS:
-                return left + right
+                if (isinstance(left, str) and isinstance(right, str)) or \
+                        (isinstance(left, float) and isinstance(right, float)):
+                    return left + right
+                raise InterpretError(expr.operator, "Operands must be two numbers or two strings.")
             case TokenType.SLASH:
                 self._check_number_operands(expr.operator, left, right)
                 return left / right
