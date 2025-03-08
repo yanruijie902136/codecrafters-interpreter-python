@@ -21,7 +21,7 @@ class Parser:
         if self._match(TokenType.NIL):
             return LiteralExpr(None)
 
-        if self._match(TokenType.NUMBER):
+        if self._match(TokenType.NUMBER, TokenType.STRING):
             return LiteralExpr(self._previous().literal)
 
     def _match(self, *token_types: TokenType) -> bool:
