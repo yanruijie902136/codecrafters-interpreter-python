@@ -70,6 +70,8 @@ class Scanner:
                     return
                 elif c.isdigit():
                     self._number()
+                elif self._isalnum(c):
+                    self._identifier()
                 else:
                     self._error(f"Unexpected character: {c}")
 
@@ -127,3 +129,11 @@ class Scanner:
 
     def _peek_next(self) -> str:
         return "" if self._current + 1 >= len(self._source) else self._source[self._current + 1]
+
+    def _identifier(self) -> None:
+        while self._isalnum(self._peek()):
+            self._advance()
+        self._add_token(TokenType.IDENTIFIER)
+
+    def _isalnum(self, c: str) -> bool:
+        return c == "_" or c.isalnum()

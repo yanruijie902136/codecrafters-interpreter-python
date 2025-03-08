@@ -14,6 +14,7 @@ TokenType = enum.Enum(
         "EQUAL_EQUAL",
         "GREATER",
         "GREATER_EQUAL",
+        "IDENTIFIER",
         "LEFT_BRACE",
         "LEFT_PAREN",
         "LESS",
