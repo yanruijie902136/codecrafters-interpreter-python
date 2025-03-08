@@ -24,13 +24,13 @@ class Interpreter:
         right = self._evaluate(expr.right)
         match expr.operator.token_type:
             case TokenType.MINUS:
-                return float(left) - float(right)
+                return left - right
             case TokenType.PLUS:
-                return float(left) + float(right)
+                return left + right
             case TokenType.SLASH:
-                return float(left) / float(right)
+                return left / right
             case TokenType.STAR:
-                return float(left) * float(right)
+                return left * right
 
     def _evaluate_grouping_expr(self, expr: GroupingExpr) -> Any:
         return self._evaluate(expr.expression)
@@ -44,7 +44,7 @@ class Interpreter:
             case TokenType.BANG:
                 return not self._is_truthy(right)
             case TokenType.MINUS:
-                return -float(right)
+                return -right
 
     def _is_truthy(self, value: Any) -> bool:
         if value is None:
