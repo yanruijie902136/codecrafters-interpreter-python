@@ -1,5 +1,11 @@
+import sys
+
 from .expr import *
 from .token import Token, TokenType
+
+
+class ParseError(Exception):
+    pass
 
 
 class Parser:
@@ -56,8 +62,10 @@ class Parser:
 
         if self._match(TokenType.LEFT_PAREN):
             expr = self._expression()
-            self._advance()
+            self._consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.")
             return GroupingExpr(expr)
+
+        raise self._error(self._peek(), "Expect expression.")
 
     def _match(self, *token_types: TokenType) -> bool:
         for token_type in token_types:
@@ -82,3 +90,13 @@ class Parser:
 
     def _previous(self) -> Token:
         return self._tokens[self._current - 1]
+
+    def _consume(self, token_type: TokenType, error_message: str) -> Token:
+        if self._check(token_type):
+            return self._advance()
+        raise self._error(self._peek(), error_message)
+
+    def _error(self, token: Token, error_message: str) -> ParseError:
+        where = "at end" if token.token_type == TokenType.EOF else f"at {token.lexeme}"
+        print(f"[line {token.line}] Error {where}: {error_message}", file=sys.stderr)
+        return ParseError()

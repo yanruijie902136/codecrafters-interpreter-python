@@ -23,8 +23,11 @@ def tokenize(source: str, print_tokens: bool = False) -> list[lox.Token]:
 
 
 def parse(tokens: list[lox.Token]) -> None:
-    parser = lox.Parser(tokens)
-    lox.AstPrinter().print(parser.parse())
+    try:
+        expr = lox.Parser(tokens).parse()
+    except lox.ParseError:
+        sys.exit(65)
+    lox.AstPrinter().print(expr)
 
 
 def main() -> None:

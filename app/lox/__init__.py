@@ -1,5 +1,5 @@
 from .ast_printer import AstPrinter
 from .expr import Expr
-from .parser import Parser
+from .parser import Parser, ParseError
 from .scanner import Scanner
 from .token import Token, TokenType
