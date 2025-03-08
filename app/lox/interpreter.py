@@ -1,6 +1,7 @@
 from typing import Any
 
 from .expr import *
+from .token import TokenType
 
 
 class Interpreter:
@@ -13,12 +14,29 @@ class Interpreter:
             return self._evaluate_grouping_expr(expr)
         if isinstance(expr, LiteralExpr):
             return self._evaluate_literal_expr(expr)
+        if isinstance(expr, UnaryExpr):
+            return self._evaluate_unary_expr(expr)
 
     def _evaluate_grouping_expr(self, expr: GroupingExpr) -> Any:
         return self._evaluate(expr.expression)
 
     def _evaluate_literal_expr(self, expr: LiteralExpr) -> Any:
         return expr.value
+
+    def _evaluate_unary_expr(self, expr: UnaryExpr) -> Any:
+        right = self._evaluate(expr.right)
+        match expr.operator.token_type:
+            case TokenType.BANG:
+                return not self._is_truthy(right)
+            case TokenType.MINUS:
+                return -float(right)
+
+    def _is_truthy(self, value: Any) -> bool:
+        if value is None:
+            return False
+        if isinstance(value, bool):
+            return value
+        return True
 
     def _stringify(self, value: Any) -> str:
         if value is None:
