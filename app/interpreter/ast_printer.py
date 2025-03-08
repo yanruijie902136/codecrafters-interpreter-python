@@ -10,4 +10,6 @@ class AstPrinter:
     def _print_literal_expr(self, expr: LiteralExpr) -> str:
         if expr.value is None:
             return "nil"
-        return str(expr.value).lower()
+        elif isinstance(expr.value, bool):
+            return str(expr.value).lower()
+        return str(expr.value)

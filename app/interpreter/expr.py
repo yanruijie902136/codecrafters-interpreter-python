@@ -7,4 +7,4 @@ class Expr:
 
 @dataclasses.dataclass(frozen=True)
 class LiteralExpr(Expr):
-    value: bool | None
+    value: bool | float | None
