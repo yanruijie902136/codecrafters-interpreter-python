@@ -1,7 +1,16 @@
 from typing import Any
 
 from .expr import *
-from .token import TokenType
+from .token import Token, TokenType
+
+
+class InterpretError(Exception):
+    def __init__(self, token: Token, error_message: str) -> None:
+        self._token = token
+        self._error_message = error_message
+
+    def __str__(self) -> str:
+        return "{}\n[line {}]".format(self._error_message, self._token.line)
 
 
 class Interpreter:
@@ -56,6 +65,7 @@ class Interpreter:
             case TokenType.BANG:
                 return not self._is_truthy(right)
             case TokenType.MINUS:
+                self._check_number_operand(expr.operator, right)
                 return -right
 
     def _is_truthy(self, value: Any) -> bool:
@@ -74,3 +84,8 @@ class Interpreter:
         if isinstance(value, float) and s.endswith(".0"):
             return s[:-2]
         return s
+
+    def _check_number_operand(self, operator: Token, right: Any) -> None:
+        if isinstance(right, float):
+            return
+        raise InterpretError(operator, "Operand must be a number.")

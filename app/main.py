@@ -33,7 +33,11 @@ def parse(tokens: list[lox.Token], print_expr: bool = False) -> lox.Expr:
 
 
 def evaluate(expr: lox.Expr) -> None:
-    lox.Interpreter().interpret(expr)
+    try:
+        lox.Interpreter().interpret(expr)
+    except lox.InterpretError as error:
+        print(error, file=sys.stderr)
+        sys.exit(70)
 
 
 def main() -> None:
