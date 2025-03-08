@@ -4,11 +4,18 @@ from typing import Any
 from .token import Token
 
 
-__all__ = ["Expr", "GroupingExpr", "LiteralExpr", "UnaryExpr"]
+__all__ = ["Expr", "BinaryExpr", "GroupingExpr", "LiteralExpr", "UnaryExpr"]
 
 
 class Expr:
     pass
+
+
+@dataclasses.dataclass(frozen=True)
+class BinaryExpr(Expr):
+    left: Expr
+    operator: Token
+    right: Expr
 
 
 @dataclasses.dataclass(frozen=True)
