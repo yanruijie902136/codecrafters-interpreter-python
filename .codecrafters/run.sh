@@ -6,4 +6,4 @@
 #
 # Learn more: https://codecrafters.io/program-interface
 
-exec pipenv run python3 -m app.main "$@"
+exec pipenv run python3 app/main.py "$@"

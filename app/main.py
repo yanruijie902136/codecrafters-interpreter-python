@@ -1,25 +1,33 @@
+import argparse
 import sys
 
+from interpreter import Scanner
 
-def main():
-    if len(sys.argv) < 3:
-        print("Usage: ./your_program.sh tokenize <filename>", file=sys.stderr)
-        exit(1)
 
-    command = sys.argv[1]
-    filename = sys.argv[2]
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("command", type=str, choices=["tokenize"])
+    parser.add_argument("filename", type=str)
+    return parser.parse_args()
 
-    if command != "tokenize":
-        print(f"Unknown command: {command}", file=sys.stderr)
-        exit(1)
 
-    with open(filename) as file:
-        file_contents = file.read()
+def tokenize(source: str) -> None:
+    scanner = Scanner(source)
+    for token in scanner.scan_tokens():
+        print(token)
 
-    if file_contents:
-        raise NotImplementedError("Scanner not implemented")
+
+def main() -> None:
+    args = parse_args()
+
+    with open(args.filename, mode="r") as file:
+        source = file.read()
+
+    if args.command == "tokenize":
+        tokenize(source)
     else:
-        print("EOF  null")
+        print(f"Unknown command: {args.command}", file=sys.stderr)
+        sys.exit(1)
 
 
 if __name__ == "__main__":
