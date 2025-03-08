@@ -1,6 +1,6 @@
 import sys
 
-from .token import Token, TokenType
+from .token import Token, TokenLiteral, TokenType
 
 
 class Scanner:
@@ -78,7 +78,7 @@ class Scanner:
         self._current += 1
         return c
 
-    def _add_token(self, token_type: TokenType, literal: str | float | None = None) -> None:
+    def _add_token(self, token_type: TokenType, literal: TokenLiteral = None) -> None:
         token = Token(token_type, self._get_lexeme(), literal, self._line)
         self._tokens.append(token)
 

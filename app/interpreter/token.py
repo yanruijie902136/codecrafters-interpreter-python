@@ -30,12 +30,14 @@ TokenType = enum.Enum(
     ],
 )
 
+type TokenLiteral = str | float | None
+
 
 @dataclasses.dataclass
 class Token:
     token_type: TokenType
     lexeme: str
-    literal: str | float | None
+    literal: TokenLiteral
     line: int
 
     def __str__(self) -> str:
