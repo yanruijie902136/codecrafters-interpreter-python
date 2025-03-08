@@ -37,12 +37,16 @@ class Interpreter:
             case TokenType.EQUAL_EQUAL:
                 return left == right
             case TokenType.GREATER:
+                self._check_number_operands(expr.operator, left, right)
                 return left > right
             case TokenType.GREATER_EQUAL:
+                self._check_number_operands(expr.operator, left, right)
                 return left >= right
             case TokenType.LESS:
+                self._check_number_operands(expr.operator, left, right)
                 return left < right
             case TokenType.LESS_EQUAL:
+                self._check_number_operands(expr.operator, left, right)
                 return left <= right
             case TokenType.MINUS:
                 self._check_number_operands(expr.operator, left, right)
