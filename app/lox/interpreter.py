@@ -49,8 +49,10 @@ class Interpreter:
             case TokenType.PLUS:
                 return left + right
             case TokenType.SLASH:
+                self._check_number_operands(expr.operator, left, right)
                 return left / right
             case TokenType.STAR:
+                self._check_number_operands(expr.operator, left, right)
                 return left * right
 
     def _evaluate_grouping_expr(self, expr: GroupingExpr) -> Any:
@@ -89,3 +91,8 @@ class Interpreter:
         if isinstance(right, float):
             return
         raise InterpretError(operator, "Operand must be a number.")
+
+    def _check_number_operands(self, operator: Token, left: Any, right: Any) -> None:
+        if isinstance(left, float) and isinstance(right, float):
+            return
+        raise InterpretError(operator, "Operands must be numbers.")
