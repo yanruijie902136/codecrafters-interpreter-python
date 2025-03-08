@@ -47,6 +47,8 @@ class Scanner:
                 self._add_token(TokenType.SEMICOLON)
             case "*":
                 self._add_token(TokenType.STAR)
+            case "=":
+                self._add_token(TokenType.EQUAL_EQUAL if self._match("=") else TokenType.EQUAL)
             case _:
                 self._error(f"Unexpected character: {c}")
 
@@ -65,3 +67,9 @@ class Scanner:
     def _error(self, error_message: str) -> None:
         print("[line 1] Error:", error_message, file=sys.stderr)
         self._has_error = True
+
+    def _match(self, expected: str) -> bool:
+        if self._is_at_end() or self._source[self._current] != expected:
+            return False
+        self._advance()
+        return True

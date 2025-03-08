@@ -8,6 +8,8 @@ TokenType = enum.Enum(
         "COMMA",
         "DOT",
         "EOF",
+        "EQUAL",
+        "EQUAL_EQUAL",
         "LEFT_BRACE",
         "LEFT_PAREN",
         "MINUS",
