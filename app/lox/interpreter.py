@@ -10,12 +10,23 @@ class Interpreter:
         print(self._stringify(value))
 
     def _evaluate(self, expr: Expr) -> Any:
+        if isinstance(expr, BinaryExpr):
+            return self._evaluate_binary_expr(expr)
         if isinstance(expr, GroupingExpr):
             return self._evaluate_grouping_expr(expr)
         if isinstance(expr, LiteralExpr):
             return self._evaluate_literal_expr(expr)
         if isinstance(expr, UnaryExpr):
             return self._evaluate_unary_expr(expr)
+
+    def _evaluate_binary_expr(self, expr: BinaryExpr) -> Any:
+        left = self._evaluate(expr.left)
+        right = self._evaluate(expr.right)
+        match expr.operator.token_type:
+            case TokenType.SLASH:
+                return float(left) / float(right)
+            case TokenType.STAR:
+                return float(left) * float(right)
 
     def _evaluate_grouping_expr(self, expr: GroupingExpr) -> Any:
         return self._evaluate(expr.expression)
