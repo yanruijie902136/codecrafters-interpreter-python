@@ -25,6 +25,7 @@ TokenType = enum.Enum(
         "SEMICOLON",
         "SLASH",
         "STAR",
+        "STRING",
     ],
 )
 
@@ -33,7 +34,12 @@ TokenType = enum.Enum(
 class Token:
     token_type: TokenType
     lexeme: str
+    literal: str | None
     line: int
 
     def __str__(self) -> str:
-        return "{} {} null".format(self.token_type.name, self.lexeme)
+        return "{} {} {}".format(
+            self.token_type.name,
+            self.lexeme,
+            "null" if self.literal is None else self.literal,
+        )

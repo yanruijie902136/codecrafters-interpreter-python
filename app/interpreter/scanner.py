@@ -63,6 +63,8 @@ class Scanner:
                     self._add_token(TokenType.SLASH)
             case "\n":
                 self._line += 1
+            case "\"":
+                self._string()
             case _:
                 if c.isspace():
                     return
@@ -73,8 +75,8 @@ class Scanner:
         self._current += 1
         return c
 
-    def _add_token(self, token_type: TokenType) -> None:
-        token = Token(token_type, self._get_lexeme(), self._line)
+    def _add_token(self, token_type: TokenType, literal: str | None = None) -> None:
+        token = Token(token_type, self._get_lexeme(), literal, self._line)
         self._tokens.append(token)
 
     def _get_lexeme(self) -> str:
@@ -96,3 +98,15 @@ class Scanner:
 
     def _peek(self) -> str:
         return "" if self._is_at_end() else self._source[self._current]
+
+    def _string(self) -> None:
+        while not self._is_at_end() and self._peek() != "\"":
+            if self._advance() == "\n":
+                self._line += 1
+
+        if self._is_at_end():
+            self._error("Unterminated string.")
+            return
+        self._advance()
+
+        self._add_token(TokenType.STRING, self._get_lexeme()[1:-1])
