@@ -11,7 +11,13 @@ class Parser:
         return self._expression()
 
     def _expression(self) -> Expr:
-        return self._factor()
+        return self._term()
+
+    def _term(self) -> Expr:
+        expr = self._factor()
+        while self._match(TokenType.MINUS, TokenType.PLUS):
+            expr = BinaryExpr(left=expr, operator=self._previous(), right=self._factor())
+        return expr
 
     def _factor(self) -> Expr:
         expr = self._unary()
