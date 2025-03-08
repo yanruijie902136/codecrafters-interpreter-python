@@ -12,6 +12,25 @@ class Scanner:
         self._has_error = False
         self._line = 1
 
+        self._keywords = {
+            "and": TokenType.AND,
+            "class": TokenType.CLASS,
+            "else": TokenType.ELSE,
+            "false": TokenType.FALSE,
+            "for": TokenType.FOR,
+            "fun": TokenType.FUN,
+            "if": TokenType.IF,
+            "nil": TokenType.NIL,
+            "or": TokenType.OR,
+            "print": TokenType.PRINT,
+            "return": TokenType.RETURN,
+            "super": TokenType.SUPER,
+            "this": TokenType.THIS,
+            "true": TokenType.TRUE,
+            "var": TokenType.VAR,
+            "while": TokenType.WHILE,
+        }
+
     def scan_tokens(self) -> list[Token]:
         while not self._is_at_end():
             self._scan_token()
@@ -133,7 +152,9 @@ class Scanner:
     def _identifier(self) -> None:
         while self._isalnum(self._peek()):
             self._advance()
-        self._add_token(TokenType.IDENTIFIER)
+
+        token_type = self._keywords.get(self._get_lexeme(), TokenType.IDENTIFIER)
+        self._add_token(token_type)
 
     def _isalnum(self, c: str) -> bool:
         return c == "_" or c.isalnum()
