@@ -23,6 +23,10 @@ class Interpreter:
         left = self._evaluate(expr.left)
         right = self._evaluate(expr.right)
         match expr.operator.token_type:
+            case TokenType.MINUS:
+                return float(left) - float(right)
+            case TokenType.PLUS:
+                return float(left) + float(right)
             case TokenType.SLASH:
                 return float(left) / float(right)
             case TokenType.STAR:
