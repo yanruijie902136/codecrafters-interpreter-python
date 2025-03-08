@@ -23,6 +23,10 @@ class Interpreter:
         left = self._evaluate(expr.left)
         right = self._evaluate(expr.right)
         match expr.operator.token_type:
+            case TokenType.BANG_EQUAL:
+                return left != right
+            case TokenType.EQUAL_EQUAL:
+                return left == right
             case TokenType.GREATER:
                 return left > right
             case TokenType.GREATER_EQUAL:
