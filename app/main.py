@@ -6,7 +6,7 @@ import lox
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
-    parser.add_argument("command", type=str, choices=["parse", "tokenize"])
+    parser.add_argument("command", type=str, choices=["evaluate", "parse", "tokenize"])
     parser.add_argument("filename", type=str)
     return parser.parse_args()
 
@@ -22,12 +22,18 @@ def tokenize(source: str, print_tokens: bool = False) -> list[lox.Token]:
     return tokens
 
 
-def parse(tokens: list[lox.Token]) -> None:
+def parse(tokens: list[lox.Token], print_expr: bool = False) -> lox.Expr:
     try:
         expr = lox.Parser(tokens).parse()
     except lox.ParseError:
         sys.exit(65)
-    lox.AstPrinter().print(expr)
+    if print_expr:
+        lox.AstPrinter().print(expr)
+    return expr
+
+
+def evaluate(expr: lox.Expr) -> None:
+    lox.Interpreter().interpret(expr)
 
 
 def main() -> None:
@@ -39,7 +45,9 @@ def main() -> None:
     if args.command == "tokenize":
         tokenize(source, print_tokens=True)
     elif args.command == "parse":
-        parse(tokenize(source))
+        parse(tokenize(source), print_expr=True)
+    elif args.command == "evaluate":
+        evaluate(parse(tokenize(source)))
     else:
         print(f"Unknown command: {args.command}", file=sys.stderr)
         sys.exit(1)
