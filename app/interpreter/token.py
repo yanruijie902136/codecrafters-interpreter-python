@@ -5,6 +5,8 @@ import enum
 TokenType = enum.Enum(
     "TokenType",
     [
+        "BANG",
+        "BANG_EQUAL",
         "COMMA",
         "DOT",
         "EOF",

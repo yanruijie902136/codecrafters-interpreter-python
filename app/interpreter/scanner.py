@@ -49,6 +49,8 @@ class Scanner:
                 self._add_token(TokenType.STAR)
             case "=":
                 self._add_token(TokenType.EQUAL_EQUAL if self._match("=") else TokenType.EQUAL)
+            case "!":
+                self._add_token(TokenType.BANG_EQUAL if self._match("=") else TokenType.BANG)
             case _:
                 self._error(f"Unexpected character: {c}")
 
