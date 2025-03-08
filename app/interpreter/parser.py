@@ -1,4 +1,4 @@
-from .expr import Expr, LiteralExpr
+from .expr import Expr, GroupingExpr, LiteralExpr
 from .token import Token, TokenType
 
 
@@ -23,6 +23,11 @@ class Parser:
 
         if self._match(TokenType.NUMBER, TokenType.STRING):
             return LiteralExpr(self._previous().literal)
+
+        if self._match(TokenType.LEFT_PAREN):
+            expr = self._expression()
+            self._advance()
+            return GroupingExpr(expr)
 
     def _match(self, *token_types: TokenType) -> bool:
         for token_type in token_types:
