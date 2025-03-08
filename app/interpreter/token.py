@@ -5,11 +5,17 @@ import enum
 TokenType = enum.Enum(
     "TokenType",
     [
+        "COMMA",
+        "DOT",
         "EOF",
         "LEFT_BRACE",
         "LEFT_PAREN",
+        "MINUS",
+        "PLUS",
         "RIGHT_BRACE",
         "RIGHT_PAREN",
+        "SEMICOLON",
+        "STAR",
     ],
 )
 

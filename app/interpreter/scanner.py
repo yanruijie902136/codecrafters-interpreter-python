@@ -29,6 +29,18 @@ class Scanner:
                 self._add_token(TokenType.LEFT_BRACE)
             case "}":
                 self._add_token(TokenType.RIGHT_BRACE)
+            case ",":
+                self._add_token(TokenType.COMMA)
+            case ".":
+                self._add_token(TokenType.DOT)
+            case "-":
+                self._add_token(TokenType.MINUS)
+            case "+":
+                self._add_token(TokenType.PLUS)
+            case ";":
+                self._add_token(TokenType.SEMICOLON)
+            case "*":
+                self._add_token(TokenType.STAR)
 
     def _advance(self) -> str:
         c = self._source[self._current]
