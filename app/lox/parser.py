@@ -11,7 +11,13 @@ class Parser:
         return self._expression()
 
     def _expression(self) -> Expr:
-        return self._comparison()
+        return self._equality()
+
+    def _equality(self) -> Expr:
+        expr = self._comparison()
+        while self._match(TokenType.BANG_EQUAL, TokenType.EQUAL_EQUAL):
+            expr = BinaryExpr(left=expr, operator=self._previous(), right=self._comparison())
+        return expr
 
     def _comparison(self) -> Expr:
         expr = self._term()
