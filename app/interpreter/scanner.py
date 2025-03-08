@@ -25,6 +25,10 @@ class Scanner:
                 self._add_token(TokenType.LEFT_PAREN)
             case ")":
                 self._add_token(TokenType.RIGHT_PAREN)
+            case "{":
+                self._add_token(TokenType.LEFT_BRACE)
+            case "}":
+                self._add_token(TokenType.RIGHT_BRACE)
 
     def _advance(self) -> str:
         c = self._source[self._current]

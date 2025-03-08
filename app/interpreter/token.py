@@ -6,7 +6,9 @@ TokenType = enum.Enum(
     "TokenType",
     [
         "EOF",
+        "LEFT_BRACE",
         "LEFT_PAREN",
+        "RIGHT_BRACE",
         "RIGHT_PAREN",
     ],
 )
