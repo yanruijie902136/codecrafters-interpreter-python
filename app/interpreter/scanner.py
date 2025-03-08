@@ -1,3 +1,5 @@
+import sys
+
 from .token import Token, TokenType
 
 
@@ -7,6 +9,7 @@ class Scanner:
         self._start = 0
         self._current = 0
         self._tokens = []
+        self._has_error = False
 
     def scan_tokens(self) -> list[Token]:
         while not self._is_at_end():
@@ -14,6 +17,9 @@ class Scanner:
             self._start = self._current
         self._add_token(TokenType.EOF)
         return self._tokens
+
+    def has_error(self) -> bool:
+        return self._has_error
 
     def _is_at_end(self) -> bool:
         return self._current >= len(self._source)
@@ -41,6 +47,8 @@ class Scanner:
                 self._add_token(TokenType.SEMICOLON)
             case "*":
                 self._add_token(TokenType.STAR)
+            case _:
+                self._error(f"Unexpected character: {c}")
 
     def _advance(self) -> str:
         c = self._source[self._current]
@@ -53,3 +61,7 @@ class Scanner:
 
     def _get_lexeme(self) -> str:
         return self._source[self._start:self._current]
+
+    def _error(self, error_message: str) -> None:
+        print("[line 1] Error:", error_message, file=sys.stderr)
+        self._has_error = True

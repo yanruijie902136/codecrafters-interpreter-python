@@ -15,6 +15,8 @@ def tokenize(source: str) -> None:
     scanner = Scanner(source)
     for token in scanner.scan_tokens():
         print(token)
+    if scanner.has_error():
+        sys.exit(65)
 
 
 def main() -> None:
