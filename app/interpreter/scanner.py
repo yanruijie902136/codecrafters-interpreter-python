@@ -55,6 +55,11 @@ class Scanner:
                 self._add_token(TokenType.GREATER_EQUAL if self._match("=") else TokenType.GREATER)
             case "<":
                 self._add_token(TokenType.LESS_EQUAL if self._match("=") else TokenType.LESS)
+            case "/":
+                if self._match("/"):
+                    self._comment()
+                else:
+                    self._add_token(TokenType.SLASH)
             case _:
                 self._error(f"Unexpected character: {c}")
 
@@ -75,7 +80,14 @@ class Scanner:
         self._has_error = True
 
     def _match(self, expected: str) -> bool:
-        if self._is_at_end() or self._source[self._current] != expected:
+        if self._is_at_end() or self._peek() != expected:
             return False
         self._advance()
         return True
+
+    def _comment(self) -> None:
+        while not self._is_at_end() and self._peek() != "\n":
+            self._advance()
+
+    def _peek(self) -> str:
+        return "" if self._is_at_end() else self._source[self._current]

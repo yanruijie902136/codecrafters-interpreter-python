@@ -23,6 +23,7 @@ TokenType = enum.Enum(
         "RIGHT_BRACE",
         "RIGHT_PAREN",
         "SEMICOLON",
+        "SLASH",
         "STAR",
     ],
 )
