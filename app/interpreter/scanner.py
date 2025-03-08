@@ -61,6 +61,8 @@ class Scanner:
                 else:
                     self._add_token(TokenType.SLASH)
             case _:
+                if c.isspace():
+                    return
                 self._error(f"Unexpected character: {c}")
 
     def _advance(self) -> str:
