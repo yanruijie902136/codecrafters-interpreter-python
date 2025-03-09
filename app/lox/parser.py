@@ -1,6 +1,7 @@
 import sys
 
 from .expr import *
+from .stmt import *
 from .token import Token, TokenType
 
 
@@ -13,8 +14,23 @@ class Parser:
         self._tokens = tokens
         self._current = 0
 
-    def parse(self) -> Expr:
+    def parse_to_expr(self) -> Expr:
         return self._expression()
+
+    def parse_to_stmts(self) -> list[Stmt]:
+        statements = []
+        while not self._is_at_end():
+            statements.append(self._statement())
+        return statements
+
+    def _statement(self) -> Stmt:
+        if self._match(TokenType.PRINT):
+            return self._print_statement()
+
+    def _print_statement(self) -> PrintStmt:
+        value = self._expression()
+        self._consume(TokenType.SEMICOLON, "Expect ';' after value.")
+        return PrintStmt(value)
 
     def _expression(self) -> Expr:
         return self._equality()

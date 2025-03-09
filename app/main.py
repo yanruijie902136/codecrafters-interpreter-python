@@ -6,7 +6,7 @@ import lox
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
-    parser.add_argument("command", type=str, choices=["evaluate", "parse", "tokenize"])
+    parser.add_argument("command", type=str, choices=["evaluate", "parse", "run", "tokenize"])
     parser.add_argument("filename", type=str)
     return parser.parse_args()
 
@@ -22,9 +22,9 @@ def tokenize(source: str, print_tokens: bool = False) -> list[lox.Token]:
     return tokens
 
 
-def parse(tokens: list[lox.Token], print_expr: bool = False) -> lox.Expr:
+def parse_to_expr(tokens: list[lox.Token], print_expr: bool = False) -> lox.Expr:
     try:
-        expr = lox.Parser(tokens).parse()
+        expr = lox.Parser(tokens).parse_to_expr()
     except lox.ParseError:
         sys.exit(65)
     if print_expr:
@@ -32,9 +32,24 @@ def parse(tokens: list[lox.Token], print_expr: bool = False) -> lox.Expr:
     return expr
 
 
+def parse_to_stmts(tokens: list[lox.Token]) -> list[lox.Stmt]:
+    try:
+        return lox.Parser(tokens).parse_to_stmts()
+    except lox.ParseError:
+        sys.exit(65)
+
+
 def evaluate(expr: lox.Expr) -> None:
     try:
-        lox.Interpreter().interpret(expr)
+        lox.Interpreter().interpret_expr(expr)
+    except lox.InterpretError as error:
+        print(error, file=sys.stderr)
+        sys.exit(70)
+
+
+def run(stmts: list[lox.Stmt]) -> None:
+    try:
+        lox.Interpreter().interpret_stmts(stmts)
     except lox.InterpretError as error:
         print(error, file=sys.stderr)
         sys.exit(70)
@@ -49,9 +64,11 @@ def main() -> None:
     if args.command == "tokenize":
         tokenize(source, print_tokens=True)
     elif args.command == "parse":
-        parse(tokenize(source), print_expr=True)
+        parse_to_expr(tokenize(source), print_expr=True)
     elif args.command == "evaluate":
-        evaluate(parse(tokenize(source)))
+        evaluate(parse_to_expr(tokenize(source)))
+    elif args.command == "run":
+        run(parse_to_stmts(tokenize(source)))
     else:
         print(f"Unknown command: {args.command}", file=sys.stderr)
         sys.exit(1)

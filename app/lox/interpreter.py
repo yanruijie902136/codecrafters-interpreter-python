@@ -1,6 +1,7 @@
 from typing import Any
 
 from .expr import *
+from .stmt import *
 from .token import Token, TokenType
 
 
@@ -14,9 +15,20 @@ class InterpretError(Exception):
 
 
 class Interpreter:
-    def interpret(self, expr: Expr) -> None:
+    def interpret_expr(self, expr: Expr) -> None:
         value = self._evaluate(expr)
         print(self._stringify(value))
+
+    def interpret_stmts(self, stmts: list[Stmt]) -> None:
+        for stmt in stmts:
+            self._execute(stmt)
+
+    def _execute(self, stmt: Stmt) -> None:
+        if isinstance(stmt, PrintStmt):
+            return self._execute_print_stmt(stmt)
+
+    def _execute_print_stmt(self, stmt: PrintStmt) -> None:
+        print(self._stringify(self._evaluate(stmt.expression)))
 
     def _evaluate(self, expr: Expr) -> Any:
         if isinstance(expr, BinaryExpr):
