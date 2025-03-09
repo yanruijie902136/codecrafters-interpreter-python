@@ -27,8 +27,6 @@ class Resolver:
             return self._resolve_call_expr(node)
         if isinstance(node, GroupingExpr):
             return self._resolve_grouping_expr(node)
-        if isinstance(node, LiteralExpr):
-            return self._resolve_literal_expr(node)
         if isinstance(node, LogicalExpr):
             return self._resolve_logical_expr(node)
         if isinstance(node, UnaryExpr):
@@ -68,9 +66,6 @@ class Resolver:
 
     def _resolve_grouping_expr(self, expr: GroupingExpr) -> None:
         self._resolve(expr.expression)
-
-    def _resolve_literal_expr(self, expr: LiteralExpr) -> None:
-        pass
 
     def _resolve_logical_expr(self, expr: LogicalExpr) -> None:
         self._resolve(expr.left)
@@ -141,8 +136,12 @@ class Resolver:
         self._scopes.pop()
 
     def _declare(self, name: Token) -> None:
-        if self._scopes:
-            self._scopes[-1][name.lexeme] = False
+        if not self._scopes:
+            return
+        scope = self._scopes[-1]
+        if name.lexeme in scope:
+            raise self._error(name, "Already a variable with this name in this scope.")
+        scope[name.lexeme] = False
 
     def _define(self, name: Token) -> None:
         if self._scopes:
