@@ -1,8 +1,13 @@
+import enum
+
 from .error import error
 from .expr import *
 from .interpreter import Interpreter
 from .stmt import *
 from .token import Token
+
+
+FunctionType = enum.Enum("FunctionType", ["NONE", "FUNCTION"])
 
 
 class ResolveError(Exception):
@@ -13,6 +18,7 @@ class Resolver:
     def __init__(self, interpreter: Interpreter) -> None:
         self._interpreter = interpreter
         self._scopes: list[dict[str, bool]] = []
+        self._current_function = FunctionType.NONE
 
     def resolve(self, statements: list[Stmt]) -> None:
         for stmt in statements:
@@ -90,7 +96,7 @@ class Resolver:
     def _resolve_function_stmt(self, stmt: FunctionStmt) -> None:
         self._declare(stmt.name)
         self._define(stmt.name)
-        self._resolve_function(stmt)
+        self._resolve_function(stmt, FunctionType.FUNCTION)
 
     def _resolve_if_stmt(self, stmt: IfStmt) -> None:
         self._resolve(stmt.condition)
@@ -102,6 +108,8 @@ class Resolver:
         self._resolve(stmt.expression)
 
     def _resolve_return_stmt(self, stmt: ReturnStmt) -> None:
+        if self._current_function == FunctionType.NONE:
+            raise self._error(stmt.keyword, "Can't return from top-level code.")
         if stmt.value is not None:
             self._resolve(stmt.value)
 
@@ -121,13 +129,18 @@ class Resolver:
                 self._interpreter.resolve(expr, depth=i)
                 return
 
-    def _resolve_function(self, function: FunctionStmt) -> None:
+    def _resolve_function(self, function: FunctionStmt, function_type: FunctionType) -> None:
+        enclosing_function = self._current_function
+        self._current_function = function_type
+
         self._begin_scope()
         for param in function.params:
             self._declare(param)
             self._define(param)
         self.resolve(function.body)
         self._end_scope()
+
+        self._current_function = enclosing_function
 
     def _begin_scope(self) -> None:
         self._scopes.append({})
