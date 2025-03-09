@@ -32,6 +32,8 @@ class Interpreter:
             return self._execute_block_stmt(stmt)
         if isinstance(stmt, ExpressionStmt):
             return self._execute_expression_stmt(stmt)
+        if isinstance(stmt, IfStmt):
+            return self._execute_if_stmt(stmt)
         if isinstance(stmt, PrintStmt):
             return self._execute_print_stmt(stmt)
         if isinstance(stmt, VarStmt):
@@ -51,6 +53,12 @@ class Interpreter:
 
     def _execute_expression_stmt(self, stmt: ExpressionStmt) -> None:
         self._evaluate(stmt.expression)
+
+    def _execute_if_stmt(self, stmt: IfStmt) -> None:
+        if self._is_truthy(self._evaluate(stmt.condition)):
+            self._execute(stmt.then_branch)
+        elif stmt.else_branch is not None:
+            self._execute(stmt.else_branch)
 
     def _execute_print_stmt(self, stmt: PrintStmt) -> None:
         print(self._stringify(self._evaluate(stmt.expression)))
