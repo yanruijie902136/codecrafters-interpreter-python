@@ -5,6 +5,7 @@ from .token import Token
 
 
 __all__ = [
+    "BlockStmt",
     "ExpressionStmt",
     "PrintStmt",
     "Stmt",
@@ -14,6 +15,11 @@ __all__ = [
 
 class Stmt:
     pass
+
+
+@dataclasses.dataclass(frozen=True)
+class BlockStmt(Stmt):
+    statements: list[Stmt]
 
 
 @dataclasses.dataclass(frozen=True)

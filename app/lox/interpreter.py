@@ -28,12 +28,26 @@ class Interpreter:
             self._execute(stmt)
 
     def _execute(self, stmt: Stmt) -> None:
+        if isinstance(stmt, BlockStmt):
+            return self._execute_block_stmt(stmt)
         if isinstance(stmt, ExpressionStmt):
             return self._execute_expression_stmt(stmt)
         if isinstance(stmt, PrintStmt):
             return self._execute_print_stmt(stmt)
         if isinstance(stmt, VarStmt):
             return self._execute_var_stmt(stmt)
+
+    def _execute_block_stmt(self, stmt: BlockStmt) -> None:
+        self._execute_block(stmt.statements, Environment(self._environment))
+
+    def _execute_block(self, statements: list[Stmt], environment: Environment) -> None:
+        previous = self._environment
+        try:
+            self._environment = environment
+            for stmt in statements:
+                self._execute(stmt)
+        finally:
+            self._environment = previous
 
     def _execute_expression_stmt(self, stmt: ExpressionStmt) -> None:
         self._evaluate(stmt.expression)
