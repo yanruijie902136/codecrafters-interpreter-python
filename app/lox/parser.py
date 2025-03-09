@@ -20,8 +20,23 @@ class Parser:
     def parse_to_stmts(self) -> list[Stmt]:
         statements = []
         while not self._is_at_end():
-            statements.append(self._statement())
+            statements.append(self._declaration())
         return statements
+
+    def _declaration(self) -> Stmt:
+        if self._match(TokenType.VAR):
+            return self._var_declaration()
+        return self._statement()
+
+    def _var_declaration(self) -> Stmt:
+        name = self._consume(TokenType.IDENTIFIER, "Expect variable name.")
+
+        initializer = None
+        if self._match(TokenType.EQUAL):
+            initializer = self._expression()
+
+        self._consume(TokenType.SEMICOLON, "Expect ';' after variable declaration.")
+        return VarStmt(name, initializer)
 
     def _statement(self) -> Stmt:
         if self._match(TokenType.PRINT):
@@ -81,6 +96,9 @@ class Parser:
 
         if self._match(TokenType.NUMBER, TokenType.STRING):
             return LiteralExpr(self._previous().literal)
+
+        if self._match(TokenType.IDENTIFIER):
+            return VariableExpr(self._previous())
 
         if self._match(TokenType.LEFT_PAREN):
             expr = self._expression()

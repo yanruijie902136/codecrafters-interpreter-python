@@ -1,9 +1,15 @@
 import dataclasses
 
 from .expr import *
+from .token import Token
 
 
-__all__ = ["Stmt", "ExpressionStmt", "PrintStmt"]
+__all__ = [
+    "ExpressionStmt",
+    "PrintStmt",
+    "Stmt",
+    "VarStmt",
+]
 
 
 class Stmt:
@@ -18,3 +24,9 @@ class ExpressionStmt(Stmt):
 @dataclasses.dataclass(frozen=True)
 class PrintStmt(Stmt):
     expression: Expr
+
+
+@dataclasses.dataclass(frozen=True)
+class VarStmt(Stmt):
+    name: Token
+    initializer: Expr | None

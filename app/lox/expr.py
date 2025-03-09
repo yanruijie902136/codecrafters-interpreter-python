@@ -4,7 +4,14 @@ from typing import Any
 from .token import Token
 
 
-__all__ = ["Expr", "BinaryExpr", "GroupingExpr", "LiteralExpr", "UnaryExpr"]
+__all__ = [
+    "BinaryExpr",
+    "Expr",
+    "GroupingExpr",
+    "LiteralExpr",
+    "UnaryExpr",
+    "VariableExpr",
+]
 
 
 class Expr:
@@ -32,3 +39,8 @@ class LiteralExpr(Expr):
 class UnaryExpr(Expr):
     operator: Token
     right: Expr
+
+
+@dataclasses.dataclass(frozen=True)
+class VariableExpr(Expr):
+    name: Token

@@ -1,5 +1,6 @@
 from typing import Any
 
+from .environment import Environment
 from .expr import *
 from .stmt import *
 from .token import Token, TokenType
@@ -15,6 +16,9 @@ class InterpretError(Exception):
 
 
 class Interpreter:
+    def __init__(self) -> None:
+        self._environment = Environment()
+
     def interpret_expr(self, expr: Expr) -> None:
         value = self._evaluate(expr)
         print(self._stringify(value))
@@ -28,12 +32,20 @@ class Interpreter:
             return self._execute_expression_stmt(stmt)
         if isinstance(stmt, PrintStmt):
             return self._execute_print_stmt(stmt)
+        if isinstance(stmt, VarStmt):
+            return self._execute_var_stmt(stmt)
 
     def _execute_expression_stmt(self, stmt: ExpressionStmt) -> None:
         self._evaluate(stmt.expression)
 
     def _execute_print_stmt(self, stmt: PrintStmt) -> None:
         print(self._stringify(self._evaluate(stmt.expression)))
+
+    def _execute_var_stmt(self, stmt: VarStmt) -> None:
+        value = None
+        if stmt.initializer is not None:
+            value = self._evaluate(stmt.initializer)
+        self._environment.define(stmt.name.lexeme, value)
 
     def _evaluate(self, expr: Expr) -> Any:
         if isinstance(expr, BinaryExpr):
@@ -44,6 +56,8 @@ class Interpreter:
             return self._evaluate_literal_expr(expr)
         if isinstance(expr, UnaryExpr):
             return self._evaluate_unary_expr(expr)
+        if isinstance(expr, VariableExpr):
+            return self._evaluate_variable_expr(expr)
 
     def _evaluate_binary_expr(self, expr: BinaryExpr) -> Any:
         left = self._evaluate(expr.left)
@@ -94,6 +108,9 @@ class Interpreter:
             case TokenType.MINUS:
                 self._check_number_operand(expr.operator, right)
                 return -right
+
+    def _evaluate_variable_expr(self, expr: VariableExpr) -> Any:
+        return self._environment.get(expr.name)
 
     def _is_truthy(self, value: Any) -> bool:
         if value is None:
