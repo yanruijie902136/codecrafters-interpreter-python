@@ -38,6 +38,8 @@ class Interpreter:
             return self._execute_print_stmt(stmt)
         if isinstance(stmt, VarStmt):
             return self._execute_var_stmt(stmt)
+        if isinstance(stmt, WhileStmt):
+            return self._execute_while_stmt(stmt)
 
     def _execute_block_stmt(self, stmt: BlockStmt) -> None:
         self._execute_block(stmt.statements, Environment(self._environment))
@@ -68,6 +70,10 @@ class Interpreter:
         if stmt.initializer is not None:
             value = self._evaluate(stmt.initializer)
         self._environment.define(stmt.name.lexeme, value)
+
+    def _execute_while_stmt(self, stmt: WhileStmt) -> None:
+        while self._is_truthy(self._evaluate(stmt.condition)):
+            self._execute(stmt.body)
 
     def _evaluate(self, expr: Expr) -> Any:
         if isinstance(expr, AssignExpr):

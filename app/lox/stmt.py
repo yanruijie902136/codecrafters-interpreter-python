@@ -11,6 +11,7 @@ __all__ = [
     "PrintStmt",
     "Stmt",
     "VarStmt",
+    "WhileStmt",
 ]
 
 
@@ -44,3 +45,9 @@ class PrintStmt(Stmt):
 class VarStmt(Stmt):
     name: Token
     initializer: Expr | None
+
+
+@dataclasses.dataclass
+class WhileStmt(Stmt):
+    condition: Expr
+    body: Stmt
