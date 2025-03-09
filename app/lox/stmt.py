@@ -7,6 +7,7 @@ from .token import Token
 __all__ = [
     "BlockStmt",
     "ExpressionStmt",
+    "FunctionStmt",
     "IfStmt",
     "PrintStmt",
     "Stmt",
@@ -27,6 +28,13 @@ class BlockStmt(Stmt):
 @dataclasses.dataclass(frozen=True)
 class ExpressionStmt(Stmt):
     expression: Expr
+
+
+@dataclasses.dataclass(frozen=True)
+class FunctionStmt(Stmt):
+    name: Token
+    params: list[Token]
+    body: list[Stmt]
 
 
 @dataclasses.dataclass(frozen=True)

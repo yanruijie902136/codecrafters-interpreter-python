@@ -2,7 +2,7 @@ from typing import Any
 
 from .environment import Environment
 from .expr import *
-from .lox_callable import LoxCallable, LoxClock
+from .lox_callable import *
 from .stmt import *
 from .token import Token, TokenType
 
@@ -18,9 +18,9 @@ class InterpretError(Exception):
 
 class Interpreter:
     def __init__(self) -> None:
-        self._globals = Environment()
-        self._globals.define("clock", LoxClock())
-        self._environment = self._globals
+        self.globals = Environment()
+        self.globals.define("clock", LoxClock())
+        self._environment = self.globals
 
     def interpret_expr(self, expr: Expr) -> None:
         value = self._evaluate(expr)
@@ -30,11 +30,22 @@ class Interpreter:
         for stmt in stmts:
             self._execute(stmt)
 
+    def execute_block(self, statements: list[Stmt], environment: Environment) -> None:
+        previous = self._environment
+        try:
+            self._environment = environment
+            for stmt in statements:
+                self._execute(stmt)
+        finally:
+            self._environment = previous
+
     def _execute(self, stmt: Stmt) -> None:
         if isinstance(stmt, BlockStmt):
             return self._execute_block_stmt(stmt)
         if isinstance(stmt, ExpressionStmt):
             return self._execute_expression_stmt(stmt)
+        if isinstance(stmt, FunctionStmt):
+            return self._execute_function_stmt(stmt)
         if isinstance(stmt, IfStmt):
             return self._execute_if_stmt(stmt)
         if isinstance(stmt, PrintStmt):
@@ -45,19 +56,13 @@ class Interpreter:
             return self._execute_while_stmt(stmt)
 
     def _execute_block_stmt(self, stmt: BlockStmt) -> None:
-        self._execute_block(stmt.statements, Environment(self._environment))
-
-    def _execute_block(self, statements: list[Stmt], environment: Environment) -> None:
-        previous = self._environment
-        try:
-            self._environment = environment
-            for stmt in statements:
-                self._execute(stmt)
-        finally:
-            self._environment = previous
+        self.execute_block(stmt.statements, Environment(self._environment))
 
     def _execute_expression_stmt(self, stmt: ExpressionStmt) -> None:
         self._evaluate(stmt.expression)
+
+    def _execute_function_stmt(self, stmt: FunctionStmt) -> None:
+        self._environment.define(stmt.name.lexeme, LoxFunction(stmt))
 
     def _execute_if_stmt(self, stmt: IfStmt) -> None:
         if self._is_truthy(self._evaluate(stmt.condition)):

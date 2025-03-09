@@ -3,8 +3,14 @@ import abc
 import time
 from typing import TYPE_CHECKING, Any
 
+from .environment import Environment
+from .stmt import FunctionStmt
+
 if TYPE_CHECKING:
     from .interpreter import Interpreter
+
+
+__all__ = ["LoxCallable", "LoxClock", "LoxFunction"]
 
 
 class LoxCallable(abc.ABC):
@@ -25,3 +31,24 @@ class LoxClock(LoxCallable):
     @property
     def arity(self) -> int:
         return 0
+
+    def __str__(self) -> str:
+        return "<native fn>"
+
+
+class LoxFunction(LoxCallable):
+    def __init__(self, declaration: FunctionStmt) -> None:
+        self._declaration = declaration
+
+    def call(self, interpreter: Interpreter, arguments: list[Any]) -> Any:
+        environment = Environment(interpreter.globals)
+        for parameter, argument in zip(self._declaration.params, arguments):
+            environment.define(parameter.lexeme, argument)
+        interpreter.execute_block(self._declaration.body, environment)
+
+    @property
+    def arity(self) -> int:
+        return len(self._declaration.params)
+
+    def __str__(self) -> str:
+        return f"<fn {self._declaration.name.lexeme}>"
