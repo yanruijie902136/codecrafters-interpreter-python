@@ -48,6 +48,8 @@ class Interpreter:
         self._environment.define(stmt.name.lexeme, value)
 
     def _evaluate(self, expr: Expr) -> Any:
+        if isinstance(expr, AssignExpr):
+            return self._evaluate_assign_expr(expr)
         if isinstance(expr, BinaryExpr):
             return self._evaluate_binary_expr(expr)
         if isinstance(expr, GroupingExpr):
@@ -58,6 +60,11 @@ class Interpreter:
             return self._evaluate_unary_expr(expr)
         if isinstance(expr, VariableExpr):
             return self._evaluate_variable_expr(expr)
+
+    def _evaluate_assign_expr(self, expr: AssignExpr) -> Any:
+        value = self._evaluate(expr.value)
+        self._environment.assign(expr.name, value)
+        return value
 
     def _evaluate_binary_expr(self, expr: BinaryExpr) -> Any:
         left = self._evaluate(expr.left)

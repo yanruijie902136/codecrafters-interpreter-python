@@ -13,5 +13,14 @@ class Environment:
     def get(self, name: Token) -> Any:
         if name.lexeme in self._values:
             return self._values[name.lexeme]
+
+        from .interpreter import InterpretError
+        raise InterpretError(name, f"Undefined variable '{name.lexeme}'.")
+
+    def assign(self, name: Token, value: Any) -> None:
+        if name.lexeme in self._values:
+            self._values[name.lexeme] = value
+            return
+
         from .interpreter import InterpretError
         raise InterpretError(name, f"Undefined variable '{name.lexeme}'.")

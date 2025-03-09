@@ -5,6 +5,7 @@ from .token import Token
 
 
 __all__ = [
+    "AssignExpr",
     "BinaryExpr",
     "Expr",
     "GroupingExpr",
@@ -16,6 +17,12 @@ __all__ = [
 
 class Expr:
     pass
+
+
+@dataclasses.dataclass(frozen=True)
+class AssignExpr(Expr):
+    name: Token
+    value: Expr
 
 
 @dataclasses.dataclass(frozen=True)
