@@ -78,6 +78,8 @@ class Interpreter:
             return self._evaluate_grouping_expr(expr)
         if isinstance(expr, LiteralExpr):
             return self._evaluate_literal_expr(expr)
+        if isinstance(expr, LogicalExpr):
+            return self._evaluate_logical_expr(expr)
         if isinstance(expr, UnaryExpr):
             return self._evaluate_unary_expr(expr)
         if isinstance(expr, VariableExpr):
@@ -128,6 +130,16 @@ class Interpreter:
 
     def _evaluate_literal_expr(self, expr: LiteralExpr) -> Any:
         return expr.value
+
+    def _evaluate_logical_expr(self, expr: LogicalExpr) -> Any:
+        left = self._evaluate(expr.left)
+        if expr.operator.token_type == TokenType.OR:
+            if self._is_truthy(left):
+                return left
+        else:
+            if not self._is_truthy(left):
+                return left
+        return self._evaluate(expr.right)
 
     def _evaluate_unary_expr(self, expr: UnaryExpr) -> Any:
         right = self._evaluate(expr.right)

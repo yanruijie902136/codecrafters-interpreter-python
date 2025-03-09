@@ -10,6 +10,7 @@ __all__ = [
     "Expr",
     "GroupingExpr",
     "LiteralExpr",
+    "LogicalExpr",
     "UnaryExpr",
     "VariableExpr",
 ]
@@ -40,6 +41,13 @@ class GroupingExpr(Expr):
 @dataclasses.dataclass(frozen=True)
 class LiteralExpr(Expr):
     value: Any
+
+
+@dataclasses.dataclass(frozen=True)
+class LogicalExpr(Expr):
+    left: Expr
+    operator: Token
+    right: Expr
 
 
 @dataclasses.dataclass(frozen=True)
