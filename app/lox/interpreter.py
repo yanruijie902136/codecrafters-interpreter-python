@@ -14,6 +14,7 @@ class Interpreter:
         self.globals = Environment()
         self.globals.define("clock", LoxClock())
         self._environment = self.globals
+        self._locals: dict[Expr, int] = {}
 
     def interpret_expr(self, expr: Expr) -> None:
         value = self._evaluate(expr)
@@ -31,6 +32,9 @@ class Interpreter:
                 self._execute(stmt)
         finally:
             self._environment = previous
+
+    def resolve(self, expr: Expr, depth: int) -> None:
+        self._locals[expr] = depth
 
     def _execute(self, stmt: Stmt) -> None:
         if isinstance(stmt, BlockStmt):
@@ -104,7 +108,11 @@ class Interpreter:
 
     def _evaluate_assign_expr(self, expr: AssignExpr) -> Any:
         value = self._evaluate(expr.value)
-        self._environment.assign(expr.name, value)
+        distance = self._locals.get(expr)
+        if distance is None:
+            self.globals.assign(expr.name, value)
+        else:
+            self._environment.assign_at(distance, expr.name, value)
         return value
 
     def _evaluate_binary_expr(self, expr: BinaryExpr) -> Any:
@@ -181,7 +189,14 @@ class Interpreter:
                 return -right
 
     def _evaluate_variable_expr(self, expr: VariableExpr) -> Any:
-        return self._environment.get(expr.name)
+        return self._look_up_variable(expr.name, expr)
+
+    def _look_up_variable(self, name: Token, expr: Expr) -> Any:
+        distance = self._locals.get(expr)
+        if distance is None:
+            return self.globals.get(name)
+        value = self._environment.get_at(distance, name)
+        return value
 
     def _is_truthy(self, value: Any) -> bool:
         if value is None:

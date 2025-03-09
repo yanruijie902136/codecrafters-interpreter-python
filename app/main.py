@@ -48,7 +48,11 @@ def evaluate(expr: lox.Expr) -> None:
 
 def run(stmts: list[lox.Stmt]) -> None:
     try:
-        lox.Interpreter().interpret_stmts(stmts)
+        interpreter = lox.Interpreter()
+        lox.Resolver(interpreter).resolve(stmts)
+        interpreter.interpret_stmts(stmts)
+    except lox.ResolveError:
+        sys.exit(65)
     except RuntimeError:
         sys.exit(70)
 

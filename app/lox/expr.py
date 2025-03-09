@@ -40,6 +40,9 @@ class CallExpr(Expr):
     paren: Token
     arguments: list[Expr]
 
+    def __hash__(self) -> int:
+        return id(self)
+
 
 @dataclasses.dataclass(frozen=True)
 class GroupingExpr(Expr):

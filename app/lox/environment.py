@@ -22,6 +22,9 @@ class Environment:
 
         runtime_error(name, f"Undefined variable '{name.lexeme}'.")
 
+    def get_at(self, distance: int, name: Token) -> Any:
+        return self._ancestor(distance)._values[name.lexeme]
+
     def assign(self, name: Token, value: Any) -> None:
         if name.lexeme in self._values:
             self._values[name.lexeme] = value
@@ -32,3 +35,12 @@ class Environment:
             return
 
         runtime_error(name, f"Undefined variable '{name.lexeme}'.")
+
+    def assign_at(self, distance: int, name: Token, value: Any) -> None:
+        self._ancestor(distance)._values[name.lexeme] = value
+
+    def _ancestor(self, distance: int) -> Environment:
+        environment = self
+        for _ in range(distance):
+            environment = environment._enclosing
+        return environment

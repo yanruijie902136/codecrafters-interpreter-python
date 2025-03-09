@@ -50,7 +50,7 @@ TokenType = enum.Enum(
 type TokenLiteral = str | float | None
 
 
-@dataclasses.dataclass
+@dataclasses.dataclass(frozen=True)
 class Token:
     token_type: TokenType
     lexeme: str
@@ -63,3 +63,6 @@ class Token:
             self.lexeme,
             "null" if self.literal is None else self.literal,
         )
+
+    def __hash__(self) -> int:
+        return id(self)
