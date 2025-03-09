@@ -65,7 +65,7 @@ class Interpreter:
         self._evaluate(stmt.expression)
 
     def _execute_function_stmt(self, stmt: FunctionStmt) -> None:
-        self._environment.define(stmt.name.lexeme, LoxFunction(stmt))
+        self._environment.define(stmt.name.lexeme, LoxFunction(stmt, self._environment))
 
     def _execute_if_stmt(self, stmt: IfStmt) -> None:
         if self._is_truthy(self._evaluate(stmt.condition)):
