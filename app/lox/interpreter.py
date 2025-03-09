@@ -2,6 +2,7 @@ from typing import Any
 
 from .environment import Environment
 from .expr import *
+from .lox_callable import LoxCallable, LoxClock
 from .stmt import *
 from .token import Token, TokenType
 
@@ -17,7 +18,9 @@ class InterpretError(Exception):
 
 class Interpreter:
     def __init__(self) -> None:
-        self._environment = Environment()
+        self._globals = Environment()
+        self._globals.define("clock", LoxClock())
+        self._environment = self._globals
 
     def interpret_expr(self, expr: Expr) -> None:
         value = self._evaluate(expr)
@@ -80,6 +83,8 @@ class Interpreter:
             return self._evaluate_assign_expr(expr)
         if isinstance(expr, BinaryExpr):
             return self._evaluate_binary_expr(expr)
+        if isinstance(expr, CallExpr):
+            return self._evaluate_call_expr(expr)
         if isinstance(expr, GroupingExpr):
             return self._evaluate_grouping_expr(expr)
         if isinstance(expr, LiteralExpr):
@@ -130,6 +135,19 @@ class Interpreter:
             case TokenType.STAR:
                 self._check_number_operands(expr.operator, left, right)
                 return left * right
+
+    def _evaluate_call_expr(self, expr: CallExpr) -> Any:
+        callee = self._evaluate(expr.callee)
+        arguments = [self._evaluate(argument) for argument in expr.arguments]
+
+        if not isinstance(callee, LoxCallable):
+            raise InterpretError(expr.paren, "Can only call functions and classes.")
+        if len(arguments) != callee.arity:
+            raise InterpretError(
+                expr.paren, f"Expected {callee.arity} arguments but got {len(arguments)}."
+            )
+
+        return callee.call(self, arguments)
 
     def _evaluate_grouping_expr(self, expr: GroupingExpr) -> Any:
         return self._evaluate(expr.expression)

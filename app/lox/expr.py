@@ -7,6 +7,7 @@ from .token import Token
 __all__ = [
     "AssignExpr",
     "BinaryExpr",
+    "CallExpr",
     "Expr",
     "GroupingExpr",
     "LiteralExpr",
@@ -31,6 +32,13 @@ class BinaryExpr(Expr):
     left: Expr
     operator: Token
     right: Expr
+
+
+@dataclasses.dataclass(frozen=True)
+class CallExpr(Expr):
+    callee: Expr
+    paren: Token
+    arguments: list[Expr]
 
 
 @dataclasses.dataclass(frozen=True)
