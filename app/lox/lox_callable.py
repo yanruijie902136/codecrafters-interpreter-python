@@ -4,6 +4,7 @@ import time
 from typing import TYPE_CHECKING, Any
 
 from .environment import Environment
+from .return_exception import ReturnException
 from .stmt import FunctionStmt
 
 if TYPE_CHECKING:
@@ -44,7 +45,11 @@ class LoxFunction(LoxCallable):
         environment = Environment(interpreter.globals)
         for parameter, argument in zip(self._declaration.params, arguments):
             environment.define(parameter.lexeme, argument)
-        interpreter.execute_block(self._declaration.body, environment)
+
+        try:
+            interpreter.execute_block(self._declaration.body, environment)
+        except ReturnException as ex:
+            return ex.value
 
     @property
     def arity(self) -> int:

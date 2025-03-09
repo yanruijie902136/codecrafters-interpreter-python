@@ -10,6 +10,7 @@ __all__ = [
     "FunctionStmt",
     "IfStmt",
     "PrintStmt",
+    "ReturnStmt",
     "Stmt",
     "VarStmt",
     "WhileStmt",
@@ -47,6 +48,12 @@ class IfStmt(Stmt):
 @dataclasses.dataclass(frozen=True)
 class PrintStmt(Stmt):
     expression: Expr
+
+
+@dataclasses.dataclass(frozen=True)
+class ReturnStmt(Stmt):
+    keyword: Token
+    value: Expr | None
 
 
 @dataclasses.dataclass(frozen=True)

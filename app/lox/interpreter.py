@@ -3,6 +3,7 @@ from typing import Any
 from .environment import Environment
 from .expr import *
 from .lox_callable import *
+from .return_exception import ReturnException
 from .stmt import *
 from .token import Token, TokenType
 
@@ -50,6 +51,8 @@ class Interpreter:
             return self._execute_if_stmt(stmt)
         if isinstance(stmt, PrintStmt):
             return self._execute_print_stmt(stmt)
+        if isinstance(stmt, ReturnStmt):
+            return self._execute_return_stmt(stmt)
         if isinstance(stmt, VarStmt):
             return self._execute_var_stmt(stmt)
         if isinstance(stmt, WhileStmt):
@@ -72,6 +75,12 @@ class Interpreter:
 
     def _execute_print_stmt(self, stmt: PrintStmt) -> None:
         print(self._stringify(self._evaluate(stmt.expression)))
+
+    def _execute_return_stmt(self, stmt: ReturnStmt) -> None:
+        value = None
+        if stmt.value is not None:
+            value = self._evaluate(stmt.value)
+        raise ReturnException(value)
 
     def _execute_var_stmt(self, stmt: VarStmt) -> None:
         value = None
