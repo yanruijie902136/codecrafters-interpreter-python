@@ -39,7 +39,7 @@ class Parser:
                 if len(parameters) >= 255:
                     raise self._error(self._peek(), "Can't have more than 255 parameters.")
                 parameters.append(self._consume(TokenType.IDENTIFIER, "Expect parameter name."))
-                if self._match(TokenType.COMMA):
+                if not self._match(TokenType.COMMA):
                     break
         self._consume(TokenType.RIGHT_PAREN, "Expect ')' after parameters.")
 
