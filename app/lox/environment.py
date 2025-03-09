@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Any
 
+from .error import runtime_error
 from .token import Token
 
 
@@ -19,8 +20,7 @@ class Environment:
         if self._enclosing is not None:
             return self._enclosing.get(name)
 
-        from .interpreter import InterpretError
-        raise InterpretError(name, f"Undefined variable '{name.lexeme}'.")
+        runtime_error(name, f"Undefined variable '{name.lexeme}'.")
 
     def assign(self, name: Token, value: Any) -> None:
         if name.lexeme in self._values:
@@ -31,5 +31,4 @@ class Environment:
             self._enclosing.assign(name, value)
             return
 
-        from .interpreter import InterpretError
-        raise InterpretError(name, f"Undefined variable '{name.lexeme}'.")
+        runtime_error(name, f"Undefined variable '{name.lexeme}'.")

@@ -1,5 +1,6 @@
 import sys
 
+from .error import error
 from .expr import *
 from .stmt import *
 from .token import Token, TokenType
@@ -283,7 +284,6 @@ class Parser:
             return self._advance()
         raise self._error(self._peek(), error_message)
 
-    def _error(self, token: Token, error_message: str) -> ParseError:
-        where = "at end" if token.token_type == TokenType.EOF else f"at {token.lexeme}"
-        print(f"[line {token.line}] Error {where}: {error_message}", file=sys.stderr)
+    def _error(self, token: Token, message: str) -> ParseError:
+        error(token, message)
         return ParseError()

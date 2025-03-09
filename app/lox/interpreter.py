@@ -1,20 +1,12 @@
 from typing import Any
 
 from .environment import Environment
+from .error import runtime_error
 from .expr import *
 from .lox_callable import *
 from .return_exception import ReturnException
 from .stmt import *
 from .token import Token, TokenType
-
-
-class InterpretError(Exception):
-    def __init__(self, token: Token, error_message: str) -> None:
-        self._token = token
-        self._error_message = error_message
-
-    def __str__(self) -> str:
-        return "{}\n[line {}]".format(self._error_message, self._token.line)
 
 
 class Interpreter:
@@ -142,7 +134,7 @@ class Interpreter:
                 if (isinstance(left, str) and isinstance(right, str)) or \
                         (isinstance(left, float) and isinstance(right, float)):
                     return left + right
-                raise InterpretError(expr.operator, "Operands must be two numbers or two strings.")
+                runtime_error(expr.operator, "Operands must be two numbers or two strings.")
             case TokenType.SLASH:
                 self._check_number_operands(expr.operator, left, right)
                 return left / right
@@ -155,10 +147,10 @@ class Interpreter:
         arguments = [self._evaluate(argument) for argument in expr.arguments]
 
         if not isinstance(callee, LoxCallable):
-            raise InterpretError(expr.paren, "Can only call functions and classes.")
+            runtime_error(expr.paren, "Can only call functions and classes.")
         if len(arguments) != callee.arity:
-            raise InterpretError(
-                expr.paren, f"Expected {callee.arity} arguments but got {len(arguments)}."
+            runtime_error(
+                expr.paren, "Expected {} arguments but got {}.".format(callee.arity, len(arguments))
             )
 
         return callee.call(self, arguments)
@@ -211,9 +203,9 @@ class Interpreter:
     def _check_number_operand(self, operator: Token, right: Any) -> None:
         if isinstance(right, float):
             return
-        raise InterpretError(operator, "Operand must be a number.")
+        runtime_error(operator, "Operand must be a number.")
 
     def _check_number_operands(self, operator: Token, left: Any, right: Any) -> None:
         if isinstance(left, float) and isinstance(right, float):
             return
-        raise InterpretError(operator, "Operands must be numbers.")
+        runtime_error(operator, "Operands must be numbers.")

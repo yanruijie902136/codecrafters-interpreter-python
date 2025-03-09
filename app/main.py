@@ -42,16 +42,14 @@ def parse_to_stmts(tokens: list[lox.Token]) -> list[lox.Stmt]:
 def evaluate(expr: lox.Expr) -> None:
     try:
         lox.Interpreter().interpret_expr(expr)
-    except lox.InterpretError as error:
-        print(error, file=sys.stderr)
+    except RuntimeError:
         sys.exit(70)
 
 
 def run(stmts: list[lox.Stmt]) -> None:
     try:
         lox.Interpreter().interpret_stmts(stmts)
-    except lox.InterpretError as error:
-        print(error, file=sys.stderr)
+    except RuntimeError:
         sys.exit(70)
 
 

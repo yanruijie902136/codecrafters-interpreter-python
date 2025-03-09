@@ -1,5 +1,6 @@
 import sys
 
+from .error import error
 from .token import Token, TokenLiteral, TokenType
 
 
@@ -106,8 +107,8 @@ class Scanner:
     def _get_lexeme(self) -> str:
         return self._source[self._start:self._current]
 
-    def _error(self, error_message: str) -> None:
-        print(f"[line {self._line}] Error: {error_message}", file=sys.stderr)
+    def _error(self, message: str) -> None:
+        error(self._line, message)
         self._has_error = True
 
     def _match(self, expected: str) -> bool:
