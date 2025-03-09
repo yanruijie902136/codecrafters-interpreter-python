@@ -24,8 +24,13 @@ class Interpreter:
             self._execute(stmt)
 
     def _execute(self, stmt: Stmt) -> None:
+        if isinstance(stmt, ExpressionStmt):
+            return self._execute_expression_stmt(stmt)
         if isinstance(stmt, PrintStmt):
             return self._execute_print_stmt(stmt)
+
+    def _execute_expression_stmt(self, stmt: ExpressionStmt) -> None:
+        self._evaluate(stmt.expression)
 
     def _execute_print_stmt(self, stmt: PrintStmt) -> None:
         print(self._stringify(self._evaluate(stmt.expression)))
