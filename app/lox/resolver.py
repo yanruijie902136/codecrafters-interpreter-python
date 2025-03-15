@@ -7,6 +7,7 @@ from .stmt import *
 from .token import Token
 
 
+ClassType = enum.Enum("ClassType", ["NONE", "CLASS"])
 FunctionType = enum.Enum("FunctionType", ["NONE", "FUNCTION", "METHOD"])
 
 
@@ -18,6 +19,7 @@ class Resolver:
     def __init__(self, interpreter: Interpreter) -> None:
         self._interpreter = interpreter
         self._scopes: list[dict[str, bool]] = []
+        self._current_class = ClassType.NONE
         self._current_function = FunctionType.NONE
 
     def resolve(self, statements: list[Stmt]) -> None:
@@ -93,6 +95,8 @@ class Resolver:
         self._resolve(expr.obj)
 
     def _resolve_this_expr(self, expr: ThisExpr) -> None:
+        if self._current_class == ClassType.NONE:
+            raise self._error(expr.keyword, "Can't use 'this' outside of a class.")
         self._resolve_local(expr, expr.keyword)
 
     def _resolve_unary_expr(self, expr: UnaryExpr) -> None:
@@ -109,6 +113,9 @@ class Resolver:
         self._end_scope()
 
     def _resolve_class_stmt(self, stmt: ClassStmt) -> None:
+        enclosing_class = self._current_class
+        self._current_class = ClassType.CLASS
+
         self._declare(stmt.name)
         self._define(stmt.name)
 
@@ -119,6 +126,8 @@ class Resolver:
             self._resolve_function(method, FunctionType.METHOD)
 
         self._end_scope()
+
+        self._current_class = enclosing_class
 
     def _resolve_expression_stmt(self, stmt: ExpressionStmt) -> None:
         self._resolve(stmt.expression)
