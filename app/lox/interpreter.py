@@ -66,7 +66,8 @@ class Interpreter:
 
         methods: dict[str, LoxFunction] = {}
         for method in stmt.methods:
-            function = LoxFunction(method, self._environment)
+            is_initializer = method.name.lexeme == "init"
+            function = LoxFunction(method, self._environment, is_initializer)
             methods[method.name.lexeme] = function
 
         klass = LoxClass(stmt.name.lexeme, methods)
@@ -76,7 +77,8 @@ class Interpreter:
         self._evaluate(stmt.expression)
 
     def _execute_function_stmt(self, stmt: FunctionStmt) -> None:
-        self._environment.define(stmt.name.lexeme, LoxFunction(stmt, self._environment))
+        function = LoxFunction(stmt, self._environment, is_initializer=False)
+        self._environment.define(stmt.name.lexeme, function)
 
     def _execute_if_stmt(self, stmt: IfStmt) -> None:
         if self._is_truthy(self._evaluate(stmt.condition)):
@@ -234,7 +236,7 @@ class Interpreter:
         distance = self._locals.get(expr)
         if distance is None:
             return self.globals.get(name)
-        value = self._environment.get_at(distance, name)
+        value = self._environment.get_at(distance, name.lexeme)
         return value
 
     def _is_truthy(self, value: Any) -> bool:
