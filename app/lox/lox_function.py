@@ -8,6 +8,7 @@ from .stmt import *
 
 if TYPE_CHECKING:
     from .interpreter import Interpreter
+    from .lox_class import LoxInstance
 
 
 class LoxFunction(LoxCallable):
@@ -24,6 +25,11 @@ class LoxFunction(LoxCallable):
             interpreter.execute_block(self._declaration.body, environment)
         except ReturnException as ex:
             return ex.value
+
+    def bind(self, instance: LoxInstance) -> LoxFunction:
+        environment = Environment(self._closure)
+        environment.define("this", instance)
+        return LoxFunction(self._declaration, environment)
 
     @property
     def arity(self) -> int:

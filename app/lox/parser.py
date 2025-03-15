@@ -262,6 +262,9 @@ class Parser:
         if self._match(TokenType.NUMBER, TokenType.STRING):
             return LiteralExpr(self._previous().literal)
 
+        if self._match(TokenType.THIS):
+            return ThisExpr(self._previous())
+
         if self._match(TokenType.IDENTIFIER):
             return VariableExpr(self._previous())
 

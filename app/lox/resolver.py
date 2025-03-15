@@ -39,6 +39,8 @@ class Resolver:
             return self._resolve_logical_expr(node)
         if isinstance(node, SetExpr):
             return self._resolve_set_expr(node)
+        if isinstance(node, ThisExpr):
+            return self._resolve_this_expr(node)
         if isinstance(node, UnaryExpr):
             return self._resolve_unary_expr(node)
         if isinstance(node, VariableExpr):
@@ -90,6 +92,9 @@ class Resolver:
         self._resolve(expr.value)
         self._resolve(expr.obj)
 
+    def _resolve_this_expr(self, expr: ThisExpr) -> None:
+        self._resolve_local(expr, expr.keyword)
+
     def _resolve_unary_expr(self, expr: UnaryExpr) -> None:
         self._resolve(expr.right)
 
@@ -106,8 +111,14 @@ class Resolver:
     def _resolve_class_stmt(self, stmt: ClassStmt) -> None:
         self._declare(stmt.name)
         self._define(stmt.name)
+
+        self._begin_scope()
+        self._scopes[-1]["this"] = True
+
         for method in stmt.methods:
             self._resolve_function(method, FunctionType.METHOD)
+
+        self._end_scope()
 
     def _resolve_expression_stmt(self, stmt: ExpressionStmt) -> None:
         self._resolve(stmt.expression)

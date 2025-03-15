@@ -14,6 +14,7 @@ __all__ = [
     "LiteralExpr",
     "LogicalExpr",
     "SetExpr",
+    "ThisExpr",
     "UnaryExpr",
     "VariableExpr",
 ]
@@ -71,6 +72,11 @@ class SetExpr(Expr):
     obj: Expr
     name: Token
     value: Expr
+
+
+@dataclasses.dataclass(eq=False, frozen=True)
+class ThisExpr(Expr):
+    keyword: Token
 
 
 @dataclasses.dataclass(eq=False, frozen=True)

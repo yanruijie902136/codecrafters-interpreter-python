@@ -120,6 +120,8 @@ class Interpreter:
             return self._evaluate_logical_expr(expr)
         if isinstance(expr, SetExpr):
             return self._evaluate_set_expr(expr)
+        if isinstance(expr, ThisExpr):
+            return self._evaluate_this_expr(expr)
         if isinstance(expr, UnaryExpr):
             return self._evaluate_unary_expr(expr)
         if isinstance(expr, VariableExpr):
@@ -212,6 +214,9 @@ class Interpreter:
         value = self._evaluate(expr.value)
         obj.set(expr.name, value)
         return value
+
+    def _evaluate_this_expr(self, expr: ThisExpr) -> Any:
+        return self._look_up_variable(expr.keyword, expr)
 
     def _evaluate_unary_expr(self, expr: UnaryExpr) -> Any:
         right = self._evaluate(expr.right)
