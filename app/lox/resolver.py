@@ -7,7 +7,7 @@ from .stmt import *
 from .token import Token
 
 
-FunctionType = enum.Enum("FunctionType", ["NONE", "FUNCTION"])
+FunctionType = enum.Enum("FunctionType", ["NONE", "FUNCTION", "METHOD"])
 
 
 class ResolveError(Exception):
@@ -106,6 +106,8 @@ class Resolver:
     def _resolve_class_stmt(self, stmt: ClassStmt) -> None:
         self._declare(stmt.name)
         self._define(stmt.name)
+        for method in stmt.methods:
+            self._resolve_function(method, FunctionType.METHOD)
 
     def _resolve_expression_stmt(self, stmt: ExpressionStmt) -> None:
         self._resolve(stmt.expression)

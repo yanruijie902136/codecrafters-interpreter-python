@@ -63,7 +63,14 @@ class Interpreter:
 
     def _execute_class_stmt(self, stmt: ClassStmt) -> None:
         self._environment.define(stmt.name.lexeme, None)
-        self._environment.assign(stmt.name, LoxClass(name=stmt.name.lexeme))
+
+        methods: dict[str, LoxFunction] = {}
+        for method in stmt.methods:
+            function = LoxFunction(method, self._environment)
+            methods[method.name.lexeme] = function
+
+        klass = LoxClass(stmt.name.lexeme, methods)
+        self._environment.assign(stmt.name, klass)
 
     def _execute_expression_stmt(self, stmt: ExpressionStmt) -> None:
         self._evaluate(stmt.expression)
