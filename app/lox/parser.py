@@ -1,5 +1,3 @@
-import sys
-
 from .error import error
 from .expr import *
 from .stmt import *

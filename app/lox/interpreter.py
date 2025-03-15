@@ -3,8 +3,9 @@ from typing import Any
 from .environment import Environment
 from .error import runtime_error
 from .expr import *
-from .lox_callable import *
+from .lox_callable import LoxCallable, LoxClock
 from .lox_class import LoxClass
+from .lox_function import LoxFunction
 from .return_exception import ReturnException
 from .stmt import *
 from .token import Token, TokenType
