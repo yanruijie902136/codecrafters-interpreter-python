@@ -4,6 +4,7 @@ from .environment import Environment
 from .error import runtime_error
 from .expr import *
 from .lox_callable import *
+from .lox_class import LoxClass
 from .return_exception import ReturnException
 from .stmt import *
 from .token import Token, TokenType
@@ -39,6 +40,8 @@ class Interpreter:
     def _execute(self, stmt: Stmt) -> None:
         if isinstance(stmt, BlockStmt):
             return self._execute_block_stmt(stmt)
+        if isinstance(stmt, ClassStmt):
+            return self._execute_class_stmt(stmt)
         if isinstance(stmt, ExpressionStmt):
             return self._execute_expression_stmt(stmt)
         if isinstance(stmt, FunctionStmt):
@@ -56,6 +59,10 @@ class Interpreter:
 
     def _execute_block_stmt(self, stmt: BlockStmt) -> None:
         self.execute_block(stmt.statements, Environment(self._environment))
+
+    def _execute_class_stmt(self, stmt: ClassStmt) -> None:
+        self._environment.define(stmt.name.lexeme, None)
+        self._environment.assign(stmt.name, LoxClass(name=stmt.name.lexeme))
 
     def _execute_expression_stmt(self, stmt: ExpressionStmt) -> None:
         self._evaluate(stmt.expression)

@@ -42,6 +42,8 @@ class Resolver:
 
         if isinstance(node, BlockStmt):
             return self._resolve_block_stmt(node)
+        if isinstance(node, ClassStmt):
+            return self._resolve_class_stmt(node)
         if isinstance(node, ExpressionStmt):
             return self._resolve_expression_stmt(node)
         if isinstance(node, FunctionStmt):
@@ -89,6 +91,10 @@ class Resolver:
         self._begin_scope()
         self.resolve(stmt.statements)
         self._end_scope()
+
+    def _resolve_class_stmt(self, stmt: ClassStmt) -> None:
+        self._declare(stmt.name)
+        self._define(stmt.name)
 
     def _resolve_expression_stmt(self, stmt: ExpressionStmt) -> None:
         self._resolve(stmt.expression)

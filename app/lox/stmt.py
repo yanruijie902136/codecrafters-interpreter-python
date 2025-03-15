@@ -1,3 +1,4 @@
+from __future__ import annotations
 import dataclasses
 
 from .expr import *
@@ -6,6 +7,7 @@ from .token import Token
 
 __all__ = [
     "BlockStmt",
+    "ClassStmt",
     "ExpressionStmt",
     "FunctionStmt",
     "IfStmt",
@@ -24,6 +26,12 @@ class Stmt:
 @dataclasses.dataclass(frozen=True)
 class BlockStmt(Stmt):
     statements: list[Stmt]
+
+
+@dataclasses.dataclass(frozen=True)
+class ClassStmt(Stmt):
+    name: Token
+    methods: list[FunctionStmt]
 
 
 @dataclasses.dataclass(frozen=True)

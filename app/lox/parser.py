@@ -25,11 +25,25 @@ class Parser:
         return statements
 
     def _declaration(self) -> Stmt:
+        if self._match(TokenType.CLASS):
+            return self._class_declaration()
         if self._match(TokenType.FUN):
             return self._function("function")
         if self._match(TokenType.VAR):
             return self._var_declaration()
         return self._statement()
+
+    def _class_declaration(self) -> ClassStmt:
+        name = self._consume(TokenType.IDENTIFIER, "Expect class name.")
+        self._consume(TokenType.LEFT_BRACE, "Expect '{' before class body.")
+
+        methods = []
+        while not self._check(TokenType.RIGHT_BRACE) and not self._is_at_end():
+            methods.append(self._function("method"))
+
+        self._consume(TokenType.RIGHT_BRACE, "Expect '}' after class body.")
+
+        return ClassStmt(name, methods)
 
     def _function(self, kind: str) -> FunctionStmt:
         name = self._consume(TokenType.IDENTIFIER, f"Expect {kind} name.")
