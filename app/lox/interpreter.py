@@ -4,7 +4,7 @@ from .environment import Environment
 from .error import runtime_error
 from .expr import *
 from .lox_callable import LoxCallable, LoxClock
-from .lox_class import LoxClass
+from .lox_class import LoxClass, LoxInstance
 from .lox_function import LoxFunction
 from .return_exception import ReturnException
 from .stmt import *
@@ -103,12 +103,16 @@ class Interpreter:
             return self._evaluate_binary_expr(expr)
         if isinstance(expr, CallExpr):
             return self._evaluate_call_expr(expr)
+        if isinstance(expr, GetExpr):
+            return self._evaluate_get_expr(expr)
         if isinstance(expr, GroupingExpr):
             return self._evaluate_grouping_expr(expr)
         if isinstance(expr, LiteralExpr):
             return self._evaluate_literal_expr(expr)
         if isinstance(expr, LogicalExpr):
             return self._evaluate_logical_expr(expr)
+        if isinstance(expr, SetExpr):
+            return self._evaluate_set_expr(expr)
         if isinstance(expr, UnaryExpr):
             return self._evaluate_unary_expr(expr)
         if isinstance(expr, VariableExpr):
@@ -171,6 +175,12 @@ class Interpreter:
 
         return callee.call(self, arguments)
 
+    def _evaluate_get_expr(self, expr: GetExpr) -> Any:
+        obj = self._evaluate(expr.obj)
+        if isinstance(obj, LoxInstance):
+            return obj.get(expr.name)
+        runtime_error(expr.name, "Only instances have properties.")
+
     def _evaluate_grouping_expr(self, expr: GroupingExpr) -> Any:
         return self._evaluate(expr.expression)
 
@@ -186,6 +196,15 @@ class Interpreter:
             if not self._is_truthy(left):
                 return left
         return self._evaluate(expr.right)
+
+    def _evaluate_set_expr(self, expr: SetExpr) -> Any:
+        obj = self._evaluate(expr.obj)
+        if not isinstance(obj, LoxInstance):
+            runtime_error(expr.name, "Only instances have fields.")
+
+        value = self._evaluate(expr.value)
+        obj.set(expr.name, value)
+        return value
 
     def _evaluate_unary_expr(self, expr: UnaryExpr) -> Any:
         right = self._evaluate(expr.right)

@@ -31,10 +31,14 @@ class Resolver:
             return self._resolve_binary_expr(node)
         if isinstance(node, CallExpr):
             return self._resolve_call_expr(node)
+        if isinstance(node, GetExpr):
+            return self._resolve_get_expr(node)
         if isinstance(node, GroupingExpr):
             return self._resolve_grouping_expr(node)
         if isinstance(node, LogicalExpr):
             return self._resolve_logical_expr(node)
+        if isinstance(node, SetExpr):
+            return self._resolve_set_expr(node)
         if isinstance(node, UnaryExpr):
             return self._resolve_unary_expr(node)
         if isinstance(node, VariableExpr):
@@ -72,12 +76,19 @@ class Resolver:
         for argument in expr.arguments:
             self._resolve(argument)
 
+    def _resolve_get_expr(self, expr: GetExpr) -> None:
+        self._resolve(expr.obj)
+
     def _resolve_grouping_expr(self, expr: GroupingExpr) -> None:
         self._resolve(expr.expression)
 
     def _resolve_logical_expr(self, expr: LogicalExpr) -> None:
         self._resolve(expr.left)
         self._resolve(expr.right)
+
+    def _resolve_set_expr(self, expr: SetExpr) -> None:
+        self._resolve(expr.value)
+        self._resolve(expr.obj)
 
     def _resolve_unary_expr(self, expr: UnaryExpr) -> None:
         self._resolve(expr.right)

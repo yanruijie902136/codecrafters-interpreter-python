@@ -9,9 +9,11 @@ __all__ = [
     "BinaryExpr",
     "CallExpr",
     "Expr",
+    "GetExpr",
     "GroupingExpr",
     "LiteralExpr",
     "LogicalExpr",
+    "SetExpr",
     "UnaryExpr",
     "VariableExpr",
 ]
@@ -42,6 +44,12 @@ class CallExpr(Expr):
 
 
 @dataclasses.dataclass(eq=False, frozen=True)
+class GetExpr(Expr):
+    obj: Expr
+    name: Token
+
+
+@dataclasses.dataclass(eq=False, frozen=True)
 class GroupingExpr(Expr):
     expression: Expr
 
@@ -56,6 +64,13 @@ class LogicalExpr(Expr):
     left: Expr
     operator: Token
     right: Expr
+
+
+@dataclasses.dataclass(eq=False, frozen=True)
+class SetExpr(Expr):
+    obj: Expr
+    name: Token
+    value: Expr
 
 
 @dataclasses.dataclass(eq=False, frozen=True)

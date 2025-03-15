@@ -173,6 +173,8 @@ class Parser:
 
             if isinstance(expr, VariableExpr):
                 return AssignExpr(expr.name, value)
+            elif isinstance(expr, GetExpr):
+                return SetExpr(expr.obj, expr.name, value)
 
             raise self._error(equals, "Invalid assignment target.")
 
@@ -226,6 +228,9 @@ class Parser:
         while True:
             if self._match(TokenType.LEFT_PAREN):
                 expr = self._finish_call(expr)
+            elif self._match(TokenType.DOT):
+                name = self._consume(TokenType.IDENTIFIER, "Expect property name after '.'.")
+                expr = GetExpr(expr, name)
             else:
                 break
 
