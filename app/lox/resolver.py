@@ -8,7 +8,7 @@ from .token import Token
 
 
 ClassType = enum.Enum("ClassType", ["NONE", "CLASS"])
-FunctionType = enum.Enum("FunctionType", ["NONE", "FUNCTION", "METHOD"])
+FunctionType = enum.Enum("FunctionType", ["NONE", "FUNCTION", "INITIALIZER", "METHOD"])
 
 
 class ResolveError(Exception):
@@ -123,7 +123,8 @@ class Resolver:
         self._scopes[-1]["this"] = True
 
         for method in stmt.methods:
-            self._resolve_function(method, FunctionType.METHOD)
+            function_type = FunctionType.INITIALIZER if method.name.lexeme == "init" else FunctionType.METHOD
+            self._resolve_function(method, function_type)
 
         self._end_scope()
 
@@ -150,6 +151,8 @@ class Resolver:
         if self._current_function == FunctionType.NONE:
             raise self._error(stmt.keyword, "Can't return from top-level code.")
         if stmt.value is not None:
+            if self._current_function == FunctionType.INITIALIZER:
+                raise self._error(stmt.keyword, "Can't return a value from an initializer.")
             self._resolve(stmt.value)
 
     def _resolve_var_stmt(self, stmt: VarStmt) -> None:
