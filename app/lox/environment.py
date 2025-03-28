@@ -7,7 +7,7 @@ from .token import Token
 
 class Environment:
     def __init__(self, enclosing: Environment | None = None) -> None:
-        self._enclosing = enclosing
+        self.enclosing = enclosing
         self._values: dict[str, Any] = {}
 
     def define(self, name: str, value: Any) -> None:
@@ -17,8 +17,8 @@ class Environment:
         if name.lexeme in self._values:
             return self._values[name.lexeme]
 
-        if self._enclosing is not None:
-            return self._enclosing.get(name)
+        if self.enclosing is not None:
+            return self.enclosing.get(name)
 
         runtime_error(name, f"Undefined variable '{name.lexeme}'.")
 
@@ -30,8 +30,8 @@ class Environment:
             self._values[name.lexeme] = value
             return
 
-        if self._enclosing is not None:
-            self._enclosing.assign(name, value)
+        if self.enclosing is not None:
+            self.enclosing.assign(name, value)
             return
 
         runtime_error(name, f"Undefined variable '{name.lexeme}'.")
@@ -42,5 +42,5 @@ class Environment:
     def _ancestor(self, distance: int) -> Environment:
         environment = self
         for _ in range(distance):
-            environment = environment._enclosing
+            environment = environment.enclosing
         return environment

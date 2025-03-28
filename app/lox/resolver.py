@@ -7,7 +7,7 @@ from .stmt import *
 from .token import Token
 
 
-ClassType = enum.Enum("ClassType", ["NONE", "CLASS"])
+ClassType = enum.Enum("ClassType", ["NONE", "CLASS", "SUBCLASS"])
 FunctionType = enum.Enum("FunctionType", ["NONE", "FUNCTION", "INITIALIZER", "METHOD"])
 
 
@@ -41,6 +41,8 @@ class Resolver:
             return self._resolve_logical_expr(node)
         if isinstance(node, SetExpr):
             return self._resolve_set_expr(node)
+        if isinstance(node, SuperExpr):
+            return self._resolve_super_expr(node)
         if isinstance(node, ThisExpr):
             return self._resolve_this_expr(node)
         if isinstance(node, UnaryExpr):
@@ -94,6 +96,13 @@ class Resolver:
         self._resolve(expr.value)
         self._resolve(expr.obj)
 
+    def _resolve_super_expr(self, expr: SuperExpr) -> None:
+        if self._current_class == ClassType.NONE:
+            raise self._error(expr.keyword, "Can't use 'super' outside of a class.")
+        elif self._current_class != ClassType.SUBCLASS:
+            raise self._error(expr.keyword, "Can't use 'super' in a class with no superclass.")
+        self._resolve_local(expr, expr.keyword)
+
     def _resolve_this_expr(self, expr: ThisExpr) -> None:
         if self._current_class == ClassType.NONE:
             raise self._error(expr.keyword, "Can't use 'this' outside of a class.")
@@ -122,7 +131,10 @@ class Resolver:
         if stmt.superclass is not None:
             if stmt.name.lexeme == stmt.superclass.name.lexeme:
                 raise self._error(stmt.superclass.name, "A class can't inherit from itself.")
+            self._current_class = ClassType.SUBCLASS
             self._resolve(stmt.superclass)
+            self._begin_scope()
+            self._scopes[-1]["super"] = True
 
         self._begin_scope()
         self._scopes[-1]["this"] = True
@@ -132,6 +144,9 @@ class Resolver:
             self._resolve_function(method, function_type)
 
         self._end_scope()
+
+        if stmt.superclass is not None:
+            self._end_scope()
 
         self._current_class = enclosing_class
 

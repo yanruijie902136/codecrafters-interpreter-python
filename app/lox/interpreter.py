@@ -70,6 +70,10 @@ class Interpreter:
 
         self._environment.define(stmt.name.lexeme, None)
 
+        if stmt.superclass is not None:
+            self._environment = Environment(self._environment)
+            self._environment.define("super", superclass)
+
         methods: dict[str, LoxFunction] = {}
         for method in stmt.methods:
             is_initializer = method.name.lexeme == "init"
@@ -77,6 +81,10 @@ class Interpreter:
             methods[method.name.lexeme] = function
 
         klass = LoxClass(stmt.name.lexeme, superclass, methods)
+
+        if superclass is not None:
+            self._environment = self._environment.enclosing
+
         self._environment.assign(stmt.name, klass)
 
     def _execute_expression_stmt(self, stmt: ExpressionStmt) -> None:
@@ -128,6 +136,8 @@ class Interpreter:
             return self._evaluate_logical_expr(expr)
         if isinstance(expr, SetExpr):
             return self._evaluate_set_expr(expr)
+        if isinstance(expr, SuperExpr):
+            return self._evaluate_super_expr(expr)
         if isinstance(expr, ThisExpr):
             return self._evaluate_this_expr(expr)
         if isinstance(expr, UnaryExpr):
@@ -222,6 +232,18 @@ class Interpreter:
         value = self._evaluate(expr.value)
         obj.set(expr.name, value)
         return value
+
+    def _evaluate_super_expr(self, expr: SuperExpr) -> Any:
+        distance = self._locals.get(expr)
+        superclass = self._environment.get_at(distance, "super")
+        assert isinstance(superclass, LoxClass)
+        instance = self._environment.get_at(distance - 1, "this")
+        assert isinstance(instance, LoxInstance)
+
+        method = superclass.find_method(expr.method.lexeme)
+        if method is None:
+            runtime_error(expr.method, "Undefined property '" + expr.method.lexeme + "'.")
+        return method.bind(instance)
 
     def _evaluate_this_expr(self, expr: ThisExpr) -> Any:
         return self._look_up_variable(expr.keyword, expr)
