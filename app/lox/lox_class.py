@@ -24,7 +24,9 @@ class LoxClass(LoxCallable):
         return instance
 
     def find_method(self, name: str) -> LoxFunction | None:
-        return self._methods.get(name)
+        if (method := self._methods.get(name)) is not None:
+            return method
+        return None if self.superclass is None else self.superclass.find_method(name)
 
     @property
     def arity(self) -> int:
