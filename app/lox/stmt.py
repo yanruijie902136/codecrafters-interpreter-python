@@ -31,6 +31,7 @@ class BlockStmt(Stmt):
 @dataclasses.dataclass(frozen=True)
 class ClassStmt(Stmt):
     name: Token
+    superclass: VariableExpr | None
     methods: list[FunctionStmt]
 
 

@@ -11,8 +11,9 @@ if TYPE_CHECKING:
 
 
 class LoxClass(LoxCallable):
-    def __init__(self, name: str, methods: dict[str, LoxFunction]) -> None:
+    def __init__(self, name: str, superclass: LoxClass | None, methods: dict[str, LoxFunction]) -> None:
         self.name = name
+        self.superclass = superclass
         self._methods = methods
 
     def call(self, interpreter: Interpreter, arguments: list[Any]) -> Any:

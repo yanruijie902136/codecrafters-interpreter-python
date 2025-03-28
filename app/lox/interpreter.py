@@ -62,6 +62,12 @@ class Interpreter:
         self.execute_block(stmt.statements, Environment(self._environment))
 
     def _execute_class_stmt(self, stmt: ClassStmt) -> None:
+        superclass = None
+        if stmt.superclass is not None:
+            superclass = self._evaluate(stmt.superclass)
+            if not isinstance(superclass, LoxClass):
+                runtime_error(stmt.superclass.name, "Superclass must be a class.")
+
         self._environment.define(stmt.name.lexeme, None)
 
         methods: dict[str, LoxFunction] = {}
@@ -70,7 +76,7 @@ class Interpreter:
             function = LoxFunction(method, self._environment, is_initializer)
             methods[method.name.lexeme] = function
 
-        klass = LoxClass(stmt.name.lexeme, methods)
+        klass = LoxClass(stmt.name.lexeme, superclass, methods)
         self._environment.assign(stmt.name, klass)
 
     def _execute_expression_stmt(self, stmt: ExpressionStmt) -> None:

@@ -119,6 +119,11 @@ class Resolver:
         self._declare(stmt.name)
         self._define(stmt.name)
 
+        if stmt.superclass is not None:
+            if stmt.name.lexeme == stmt.superclass.name.lexeme:
+                raise self._error(stmt.superclass.name, "A class can't inherit from itself.")
+            self._resolve(stmt.superclass)
+
         self._begin_scope()
         self._scopes[-1]["this"] = True
 
